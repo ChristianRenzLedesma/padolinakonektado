@@ -1,0 +1,188 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - PadolinaKonektado{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <div class="welcome-section bg-primary text-white p-4 rounded mb-4">
+            <h2 class="mb-1">Welcome, {{ session.first_name }}!</h2>
+            <p class="mb-0">Barangay Padolina Community Portal</p>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <!-- Quick Stats -->
+    <div class="col-md-3 mb-4">
+        <div class="card text-white bg-success h-100">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h4 class="card-title">{{ concern_count }}</h4>
+                        <p class="card-text">My Concerns</p>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="bi bi-chat-dots fs-1"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3 mb-4">
+        <div class="card text-white bg-info h-100">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h4 class="card-title">{{ announcements|length }}</h4>
+                        <p class="card-text">Announcements</p>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="bi bi-megaphone fs-1"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3 mb-4">
+        <div class="card text-white bg-warning h-100">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h4 class="card-title">{{ events|length }}</h4>
+                        <p class="card-text">Upcoming Events</p>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="bi bi-calendar-event fs-1"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3 mb-4">
+        <div class="card text-white bg-danger h-100">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h4 class="card-title">{{ session.user_type|title }}</h4>
+                        <p class="card-text">Account Type</p>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="bi bi-person-badge fs-1"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <!-- Recent Announcements -->
+    <div class="col-lg-6 mb-4">
+        <div class="card h-100">
+            <div class="card-header bg-primary text-white">
+                <h5 class="card-title mb-0">
+                    <i class="bi bi-megaphone"></i> Recent Announcements
+                </h5>
+            </div>
+            <div class="card-body">
+                {% if announcements %}
+                    {% for announcement in announcements %}
+                    <div class="border-start border-4 border-primary ps-3 mb-3">
+                        <h6 class="mb-1">
+                            {% if announcement.is_important %}
+                            <span class="badge bg-danger me-2">Important</span>
+                            {% endif %}
+                            {{ announcement.title }}
+                        </h6>
+                        <p class="text-muted small mb-1">{{ announcement.content[:100] }}...</p>
+                        <small class="text-muted">
+                            By: {{ announcement.first_name }} {{ announcement.last_name }} | 
+                            {{ announcement.created_at.strftime('%b %d, %Y') }}
+                        </small>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <p class="text-muted">No announcements yet.</p>
+                {% endif %}
+                <a href="{{ url_for('announcements') }}" class="btn btn-outline-primary btn-sm mt-2">
+                    View All Announcements
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Upcoming Events -->
+    <div class="col-lg-6 mb-4">
+        <div class="card h-100">
+            <div class="card-header bg-success text-white">
+                <h5 class="card-title mb-0">
+                    <i class="bi bi-calendar-event"></i> Upcoming Events
+                </h5>
+            </div>
+            <div class="card-body">
+                {% if events %}
+                    {% for event in events %}
+                    <div class="border-start border-4 border-success ps-3 mb-3">
+                        <h6 class="mb-1">{{ event.title }}</h6>
+                        <p class="text-muted small mb-1">{{ event.description[:100] if event.description else 'No description' }}...</p>
+                        <small class="text-muted">
+                            <i class="bi bi-calendar"></i> {{ event.event_date.strftime('%b %d, %Y') }}
+                            {% if event.event_time %}
+                            | <i class="bi bi-clock"></i> {{ event.event_time.strftime('%I:%M %p') }}
+                            {% endif %}
+                        </small>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <p class="text-muted">No upcoming events.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <!-- Quick Actions -->
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header bg-info text-white">
+                <h5 class="card-title mb-0">
+                    <i class="bi bi-lightning"></i> Quick Actions
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row text-center">
+                    <div class="col-md-3 mb-3">
+                        <a href="{{ url_for('announcements') }}" class="btn btn-outline-primary btn-lg w-100 h-100 py-3">
+                            <i class="bi bi-megaphone fs-1 d-block mb-2"></i>
+                            View Announcements
+                        </a>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <button class="btn btn-outline-success btn-lg w-100 h-100 py-3">
+                            <i class="bi bi-chat-dots fs-1 d-block mb-2"></i>
+                            Submit Concern
+                        </button>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <button class="btn btn-outline-warning btn-lg w-100 h-100 py-3">
+                            <i class="bi bi-calendar-check fs-1 d-block mb-2"></i>
+                            View Calendar
+                        </button>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <a href="{{ url_for('profile') }}" class="btn btn-outline-info btn-lg w-100 h-100 py-3">
+                            <i class="bi bi-person fs-1 d-block mb-2"></i>
+                            My Profile
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

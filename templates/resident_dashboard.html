@@ -1,0 +1,252 @@
+{% extends "base.html" %}
+
+{% block title %}Resident Dashboard - PadolinaKonektado{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <div class="welcome-section bg-success text-white p-4 rounded mb-4">
+            <h2 class="mb-1"><i class="bi bi-house-heart"></i> Welcome, {{ session.first_name }}!</h2>
+            <p class="mb-0">Barangay Padolina Community Portal - Resident Dashboard</p>
+        </div>
+    </div>
+</div>
+
+<!-- Quick Stats for Resident -->
+<div class="row resident-stats">
+    <div class="col-md-4 mb-4">
+        <div class="card text-white bg-primary h-100">
+            <div class="card-body text-center">
+                <i class="bi bi-chat-dots fs-1 d-block mb-2"></i>
+                <h3 class="card-title">{{ concern_count }}</h3>
+                <p class="card-text">My Reported Concerns</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4 mb-4">
+        <div class="card text-white bg-info h-100">
+            <div class="card-body text-center">
+                <i class="bi bi-megaphone fs-1 d-block mb-2"></i>
+                <h3 class="card-title">{{ announcements|length }}</h3>
+                <p class="card-text">Recent Announcements</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4 mb-4">
+        <div class="card text-white bg-warning h-100">
+            <div class="card-body text-center">
+                <i class="bi bi-calendar-event fs-1 d-block mb-2"></i>
+                <h3 class="card-title">{{ events|length }}</h3>
+                <p class="card-text">Upcoming Events</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <!-- My Recent Concerns -->
+    <div class="col-lg-6 mb-4">
+        <div class="card h-100 shadow-sm">
+            <div class="card-header bg-primary text-white">
+                <h5 class="card-title mb-0">
+                    <i class="bi bi-chat-dots"></i> My Recent Concerns
+                </h5>
+            </div>
+            <div class="card-body">
+                {% if my_concerns %}
+                    {% for concern in my_concerns %}
+                    <div class="border-start border-4 border-{% if concern.status == 'pending' %}warning{% elif concern.status == 'in_progress' %}info{% else %}success{% endif %} ps-3 mb-3">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <h6 class="mb-1">{{ concern.title }}</h6>
+                            <span class="badge bg-{% if concern.status == 'pending' %}warning{% elif concern.status == 'in_progress' %}info{% else %}success{% endif %}">
+                                {{ concern.status|replace('_', ' ')|title }}
+                            </span>
+                        </div>
+                        <p class="text-muted small mb-1">{{ concern.description[:100] }}...</p>
+                        <small class="text-muted">
+                            <i class="bi bi-calendar"></i> {{ concern.created_at.strftime('%b %d, %Y') }} |
+                            <i class="bi bi-tag"></i> {{ concern.category|title }}
+                        </small>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="text-center py-4">
+                        <i class="bi bi-chat-dots fs-1 text-muted d-block mb-2"></i>
+                        <p class="text-muted mb-3">You haven't reported any concerns yet.</p>
+                        <button class="btn btn-primary btn-sm">Report a Concern</button>
+                    </div>
+                {% endif %}
+                <div class="text-center mt-3">
+                    <button class="btn btn-outline-primary btn-sm">View All My Concerns</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Announcements -->
+    <div class="col-lg-6 mb-4">
+        <div class="card h-100 shadow-sm">
+            <div class="card-header bg-success text-white">
+                <h5 class="card-title mb-0">
+                    <i class="bi bi-megaphone"></i> Recent Announcements
+                </h5>
+            </div>
+            <div class="card-body">
+                {% if announcements %}
+                    {% for announcement in announcements %}
+                    <div class="border-start border-4 border-success ps-3 mb-3">
+                        <h6 class="mb-1">
+                            {% if announcement.is_important %}
+                            <span class="badge bg-danger me-2">Important</span>
+                            {% endif %}
+                            {{ announcement.title }}
+                        </h6>
+                        <p class="text-muted small mb-1">{{ announcement.content[:120] }}...</p>
+                        <small class="text-muted">
+                            <i class="bi bi-person"></i> {{ announcement.first_name }} {{ announcement.last_name }} | 
+                            <i class="bi bi-calendar"></i> {{ announcement.created_at.strftime('%b %d, %Y') }}
+                        </small>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="text-center py-4">
+                        <i class="bi bi-megaphone fs-1 text-muted d-block mb-2"></i>
+                        <p class="text-muted">No announcements yet.</p>
+                    </div>
+                {% endif %}
+                <a href="{{ url_for('announcements') }}" class="btn btn-outline-success btn-sm mt-2 w-100">
+                    View All Announcements
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <!-- Upcoming Events -->
+    <div class="col-lg-8 mb-4">
+        <div class="card h-100 shadow-sm">
+            <div class="card-header bg-warning text-white">
+                <h5 class="card-title mb-0">
+                    <i class="bi bi-calendar-event"></i> Upcoming Events
+                </h5>
+            </div>
+            <div class="card-body">
+                {% if events %}
+                    {% for event in events %}
+                    <div class="row align-items-center mb-3 pb-2 border-bottom">
+                        <div class="col-md-2 text-center mb-2 mb-md-0">
+                            <div class="event-date">
+                                <strong>{{ event.event_date.strftime('%d') }}</strong>
+                                <br>
+                                <small>{{ event.event_date.strftime('%b') }}</small>
+                            </div>
+                        </div>
+                        <div class="col-md-8 mb-2 mb-md-0">
+                            <h6 class="mb-1">{{ event.title }}</h6>
+                            <p class="text-muted small mb-1">{{ event.description[:80] if event.description else 'Community event' }}...</p>
+                            <small class="text-muted">
+                                <i class="bi bi-clock"></i> {{ event.event_time.strftime('%I:%M %p') if event.event_time else 'All day' }} |
+                                <i class="bi bi-geo-alt"></i> {{ event.location }}
+                            </small>
+                        </div>
+                        <div class="col-md-2 text-center text-md-end">
+                            <button class="btn btn-outline-warning btn-sm">Details</button>
+                        </div>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="text-center py-4">
+                        <i class="bi bi-calendar-x fs-1 text-muted d-block mb-2"></i>
+                        <p class="text-muted">No upcoming events scheduled.</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="col-lg-4 mb-4">
+        <div class="card h-100 shadow-sm">
+            <div class="card-header bg-info text-white">
+                <h5 class="card-title mb-0">
+                    <i class="bi bi-lightning"></i> Quick Actions
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="d-grid gap-3">
+                    <button class="btn btn-outline-primary btn-lg">
+                        <i class="bi bi-chat-dots"></i> Report Concern
+                    </button>
+                    <a href="{{ url_for('announcements') }}" class="btn btn-outline-success btn-lg">
+                        <i class="bi bi-megaphone"></i> View Announcements
+                    </a>
+                    <a href="{{ url_for('profile') }}" class="btn btn-outline-warning btn-lg">
+                        <i class="bi bi-person"></i> My Profile
+                    </a>
+                    <button class="btn btn-outline-info btn-lg">
+                        <i class="bi bi-calendar-event"></i> Event Calendar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Community Info -->
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="card shadow-sm">
+            <div class="card-header bg-secondary text-white">
+                <h5 class="card-title mb-0">
+                    <i class="bi bi-info-circle"></i> Community Information
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6 community-info">
+                        <h6 class="fw-bold mb-3">Barangay Contacts</h6>
+                        <ul class="list-unstyled">
+                            <li class="mb-2">
+                                <i class="bi bi-telephone text-primary"></i> 
+                                <strong>Barangay Hall:</strong> (02) 8123-4567
+                            </li>
+                            <li class="mb-2">
+                                <i class="bi bi-phone text-danger"></i> 
+                                <strong>Emergency:</strong> 0912-345-6789
+                            </li>
+                            <li class="mb-2">
+                                <i class="bi bi-envelope text-info"></i> 
+                                <strong>Email:</strong> brgy.padolina@example.com
+                            </li>
+                            <li class="mb-2">
+                                <i class="bi bi-geo-alt text-success"></i> 
+                                <strong>Address:</strong> Barangay Hall, Padolina
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="col-md-6">
+                        <h6 class="fw-bold mb-3">Quick Links</h6>
+                        <div class="d-grid gap-2">
+                            <button class="btn btn-outline-primary btn-sm">
+                                <i class="bi bi-chat-left-text"></i> Community Forum
+                            </button>
+                            <button class="btn btn-outline-success btn-sm">
+                                <i class="bi bi-calendar-check"></i> Event Calendar
+                            </button>
+                            <button class="btn btn-outline-info btn-sm">
+                                <i class="bi bi-journal-text"></i> Barangay Directory
+                            </button>
+                            <button class="btn btn-outline-warning btn-sm">
+                                <i class="bi bi-file-earmark-text"></i> Download Forms
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
