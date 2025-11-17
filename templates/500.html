@@ -1,0 +1,32 @@
+{% extends "public_base.html" %}
+
+{% block title %}Server Error - PadolinaKonektado{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center text-center">
+    <div class="col-lg-6">
+        <div class="error-card glass-effect rounded-4 p-5">
+            <i class="bi bi-server display-1 text-danger mb-4"></i>
+            <h1 class="display-4 fw-bold text-white mb-4">500</h1>
+            <h2 class="text-white mb-4">Server Error</h2>
+            <p class="text-light mb-4">
+                Something went wrong on our end. Please try again later.
+            </p>
+            <div class="d-grid gap-2 d-md-block">
+                <a href="{{ url_for('home') }}" class="btn btn-warning btn-lg me-2">
+                    <i class="bi bi-house me-2"></i>Go Home
+                </a>
+                <a href="javascript:history.back()" class="btn btn-outline-light btn-lg">
+                    <i class="bi bi-arrow-left me-2"></i>Go Back
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .error-card {
+        margin: 4rem 0;
+    }
+</style>
+{% endblock %}

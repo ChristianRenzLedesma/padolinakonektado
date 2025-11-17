@@ -1,0 +1,490 @@
+{% extends "public_base.html" %}
+
+{% block title %}Verify OTP - PadolinaKonektado{% endblock %}
+
+{% block main_class %}otp-verification-main{% endblock %}
+
+{% block content %}
+<div class="container otp-container">
+    <div class="row justify-content-center">
+        <div class="col-12 col-sm-10 col-md-8 col-lg-5">
+            <div class="card">
+                <div class="card-header text-center">
+                    <h2 class="mb-3">
+                        <i class="bi bi-phone me-2"></i>
+                        Verify OTP
+                    </h2>
+                    <p class="mb-0">Enter the 6-digit code sent to your email</p>
+                </div>
+
+                <div class="card-body">
+                    <!-- Flash Messages -->
+                    {% with messages = get_flashed_messages(with_categories=true) %}
+                        {% if messages %}
+                            {% for category, message in messages %}
+                                <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                                    <div class="d-flex align-items-center">
+                                        <i class="bi bi-{% if category == 'success' %}check-circle{% elif category == 'danger' %}exclamation-triangle{% else %}info-circle{% endif %} me-2"></i>
+                                        <span>{{ message }}</span>
+                                    </div>
+                                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                                </div>
+                            {% endfor %}
+                        {% endif %}
+                    {% endwith %}
+
+                    <div class="text-center mb-4">
+                        <h5 class="text-dark mb-1">Email Address</h5>
+                        <p class="text-muted mb-4" id="userEmail">{{ email }}</p>
+                    </div>
+
+                    <!-- Success Message -->
+                    <div id="otpSuccess" class="alert alert-success d-none" role="alert">
+                        <i class="bi bi-check-circle-fill me-2"></i>
+                        <strong>Success!</strong> OTP verified successfully!
+                    </div>
+
+                    <!-- Error Message -->
+                    <div id="otpError" class="alert alert-danger d-none" role="alert">
+                        <i class="bi bi-exclamation-triangle me-2"></i>
+                        <span id="errorMessage"></span>
+                    </div>
+
+                    <!-- Loading Spinner -->
+                    <div id="otpLoading" class="text-center d-none">
+                        <div class="spinner-border text-warning" role="status">
+                            <span class="visually-hidden">Verifying...</span>
+                        </div>
+                        <p class="text-muted mt-2">Verifying OTP...</p>
+                    </div>
+
+                    <form id="otpVerificationForm">
+                        <div class="mb-4">
+                            <label class="form-label fw-semibold text-dark mb-3">
+                                <i class="bi bi-key me-2"></i>Enter 6-digit OTP Code
+                            </label>
+                            <div class="otp-input-container">
+                                <div class="row g-2 mb-3 justify-content-center">
+                                    <div class="col-2">
+                                        <input type="text" class="form-control form-control-lg text-center otp-digit" 
+                                               maxlength="1" data-index="1" inputmode="numeric" pattern="[0-9]*"
+                                               style="font-size: 1.5rem; font-weight: bold; height: 60px;">
+                                    </div>
+                                    <div class="col-2">
+                                        <input type="text" class="form-control form-control-lg text-center otp-digit" 
+                                               maxlength="1" data-index="2" inputmode="numeric" pattern="[0-9]*"
+                                               style="font-size: 1.5rem; font-weight: bold; height: 60px;">
+                                    </div>
+                                    <div class="col-2">
+                                        <input type="text" class="form-control form-control-lg text-center otp-digit" 
+                                               maxlength="1" data-index="3" inputmode="numeric" pattern="[0-9]*"
+                                               style="font-size: 1.5rem; font-weight: bold; height: 60px;">
+                                    </div>
+                                    <div class="col-2">
+                                        <input type="text" class="form-control form-control-lg text-center otp-digit" 
+                                               maxlength="1" data-index="4" inputmode="numeric" pattern="[0-9]*"
+                                               style="font-size: 1.5rem; font-weight: bold; height: 60px;">
+                                    </div>
+                                    <div class="col-2">
+                                        <input type="text" class="form-control form-control-lg text-center otp-digit" 
+                                               maxlength="1" data-index="5" inputmode="numeric" pattern="[0-9]*"
+                                               style="font-size: 1.5rem; font-weight: bold; height: 60px;">
+                                    </div>
+                                    <div class="col-2">
+                                        <input type="text" class="form-control form-control-lg text-center otp-digit" 
+                                               maxlength="1" data-index="6" inputmode="numeric" pattern="[0-9]*"
+                                               style="font-size: 1.5rem; font-weight: bold; height: 60px;">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-text text-center text-muted">
+                                Enter the 6-digit code sent to your email address
+                            </div>
+                        </div>
+
+                        <!-- Timer and Resend Section -->
+                        <div class="text-center mb-4">
+                            <div id="timerSection" class="mb-2">
+                                <small class="text-muted" id="timerText">
+                                    Code expires in: <span id="countdown">10:00</span>
+                                </small>
+                            </div>
+                            <div id="resendSection" class="d-none">
+                                <small class="text-muted">Didn't receive the code?</small>
+                                <button type="button" class="btn btn-link btn-sm p-0 ms-1" id="resendOtpBtn">
+                                    Resend OTP
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="d-grid gap-2">
+                            <button type="button" class="btn btn-warning btn-lg fw-semibold py-3" id="verifyOtpBtn">
+                                <i class="bi bi-shield-check me-2"></i> Verify OTP
+                            </button>
+                            <a href="{{ url_for('login') }}" class="btn btn-outline-primary btn-lg">
+                                <i class="bi bi-arrow-left me-2"></i> Back to Login
+                            </a>
+                        </div>
+                    </form>
+
+                    <div class="text-center mt-4">
+                        <small class="text-muted">
+                            <i class="bi bi-info-circle me-1"></i>
+                            For security reasons, this code will expire in 10 minutes.
+                        </small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .otp-verification-main {
+        background-color: #f8f9fa;
+        min-height: 100vh;
+        padding: 2rem 0;
+    }
+    
+    .otp-container {
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 2rem 0;
+    }
+    
+    .card {
+        border: 0;
+        border-radius: 0.375rem;
+        box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+    }
+    
+    .card-header {
+        background-color: #f8f9fa;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.125);
+        border-radius: 0.375rem 0.375rem 0 0;
+    }
+    
+    .form-control {
+        border: 1px solid #ced4da;
+        border-radius: 0.375rem;
+    }
+    
+    .form-control:focus {
+        border-color: #86b7fe;
+        box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+    }
+    
+    .btn-primary {
+        background-color: #0d6efd;
+        border-color: #0d6efd;
+    }
+    
+    .btn-primary:hover {
+        background-color: #0b5ed7;
+        border-color: #0a58ca;
+    }
+    
+    .btn-outline-secondary {
+        border-color: #6c757d;
+        color: #6c757d;
+    }
+    
+    .btn-outline-secondary:hover {
+        background-color: #6c757d;
+        border-color: #6c757d;
+    }
+    
+    .text-decoration-none {
+        color: #0d6efd;
+    }
+    
+    .text-decoration-none:hover {
+        color: #0a58ca;
+    }
+</style>
+
+    
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const otpDigits = document.querySelectorAll('.otp-digit');
+    const verifyOtpBtn = document.getElementById('verifyOtpBtn');
+    const resendOtpBtn = document.getElementById('resendOtpBtn');
+    const otpSuccess = document.getElementById('otpSuccess');
+    const otpError = document.getElementById('otpError');
+    const errorMessage = document.getElementById('errorMessage');
+    const otpLoading = document.getElementById('otpLoading');
+    const timerText = document.getElementById('countdown');
+    const timerSection = document.getElementById('timerSection');
+    const resendSection = document.getElementById('resendSection');
+    const userEmail = document.getElementById('userEmail').textContent.trim();
+
+    let countdown;
+    let timeLeft = 600; // 10 minutes in seconds
+
+    console.log('OTP Verification initialized for email:', userEmail);
+
+    // Initialize OTP input handling
+    function initializeOtpInputs() {
+        otpDigits.forEach((digit, index) => {
+            digit.addEventListener('input', function(e) {
+                const value = e.target.value;
+                
+                // Only allow numbers
+                if (!/^\d*$/.test(value)) {
+                    e.target.value = '';
+                    return;
+                }
+
+                // Auto-focus next input
+                if (value.length === 1 && index < otpDigits.length - 1) {
+                    otpDigits[index + 1].focus();
+                }
+
+                // Update input styling
+                updateOtpInputStyle();
+                
+                // Auto-submit when complete
+                autoSubmitWhenComplete();
+            });
+
+            digit.addEventListener('keydown', function(e) {
+                // Handle backspace
+                if (e.key === 'Backspace' && e.target.value === '' && index > 0) {
+                    otpDigits[index - 1].focus();
+                    otpDigits[index - 1].value = '';
+                    updateOtpInputStyle();
+                }
+
+                // Handle arrow keys
+                if (e.key === 'ArrowLeft' && index > 0) {
+                    otpDigits[index - 1].focus();
+                }
+                if (e.key === 'ArrowRight' && index < otpDigits.length - 1) {
+                    otpDigits[index + 1].focus();
+                }
+            });
+
+            digit.addEventListener('paste', function(e) {
+                e.preventDefault();
+                const pasteData = e.clipboardData.getData('text').slice(0, 6);
+                if (/^\d+$/.test(pasteData)) {
+                    pasteData.split('').forEach((char, charIndex) => {
+                        if (otpDigits[charIndex]) {
+                            otpDigits[charIndex].value = char;
+                        }
+                    });
+                    updateOtpInputStyle();
+                    autoSubmitWhenComplete();
+                    otpDigits[Math.min(pasteData.length, 5)].focus();
+                }
+            });
+        });
+    }
+
+    // Update OTP input styling
+    function updateOtpInputStyle() {
+        otpDigits.forEach(digit => {
+            digit.classList.remove('filled', 'valid', 'invalid');
+            if (digit.value) {
+                digit.classList.add('filled');
+            }
+        });
+    }
+
+    // Get complete OTP code
+    function getOtpCode() {
+        return Array.from(otpDigits).map(digit => digit.value).join('');
+    }
+
+    // Start countdown timer
+    function startTimer() {
+        clearInterval(countdown);
+        
+        countdown = setInterval(() => {
+            timeLeft--;
+            
+            const minutes = Math.floor(timeLeft / 60);
+            const seconds = timeLeft % 60;
+            
+            timerText.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+            
+            // Add warning style when less than 2 minutes
+            if (timeLeft < 120) {
+                timerText.classList.add('expiring');
+            }
+            
+            if (timeLeft <= 0) {
+                clearInterval(countdown);
+                timerSection.classList.add('d-none');
+                resendSection.classList.remove('d-none');
+                verifyOtpBtn.disabled = true;
+                showOtpError('OTP has expired. Please request a new one.');
+            }
+        }, 1000);
+    }
+
+    // Resend OTP functionality
+    resendOtpBtn.addEventListener('click', async function() {
+        console.log('Resending OTP for email:', userEmail);
+        resendOtpBtn.disabled = true;
+        resendOtpBtn.innerHTML = '<i class="bi bi-arrow-repeat spinner-border spinner-border-sm me-2"></i>Sending...';
+
+        try {
+            const response = await fetch('{{ url_for("forgot_password") }}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ email: userEmail })
+            });
+
+            const data = await response.json();
+            console.log('Resend OTP response:', data);
+
+            if (data.success) {
+                // Reset timer and inputs
+                timeLeft = 600;
+                otpDigits.forEach(digit => {
+                    digit.value = '';
+                    digit.classList.remove('filled', 'valid', 'invalid');
+                });
+                updateOtpInputStyle();
+                
+                // Show timer and hide resend
+                timerSection.classList.remove('d-none');
+                resendSection.classList.add('d-none');
+                verifyOtpBtn.disabled = false;
+                timerText.classList.remove('expiring');
+                
+                // Start new timer
+                startTimer();
+                
+                // Show success message
+                showOtpSuccess('New OTP has been sent to your email.');
+                
+                // Focus first input
+                otpDigits[0].focus();
+            } else {
+                showOtpError(data.message || 'Failed to resend OTP. Please try again.');
+            }
+        } catch (error) {
+            console.error('Resend OTP error:', error);
+            showOtpError('Network error. Please check your connection and try again.');
+        } finally {
+            resendOtpBtn.disabled = false;
+            resendOtpBtn.innerHTML = 'Resend OTP';
+        }
+    });
+
+    // Verify OTP functionality
+    verifyOtpBtn.addEventListener('click', async function() {
+        const otpCode = getOtpCode();
+        console.log('Verifying OTP:', otpCode, 'for email:', userEmail);
+        
+        if (otpCode.length !== 6) {
+            showOtpError('Please enter the complete 6-digit OTP code.');
+            return;
+        }
+
+        // Show loading state
+        otpLoading.classList.remove('d-none');
+        verifyOtpBtn.disabled = true;
+        verifyOtpBtn.classList.add('btn-loading');
+        otpError.classList.add('d-none');
+
+        try {
+            const response = await fetch('{{ url_for("verify_otp") }}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ 
+                    email: userEmail, 
+                    otp_code: otpCode 
+                })
+            });
+
+            const data = await response.json();
+            console.log('Verify OTP response:', data);
+
+            // Hide loading state
+            otpLoading.classList.add('d-none');
+            verifyOtpBtn.classList.remove('btn-loading');
+
+            if (data.success) {
+                showOtpSuccess('OTP verified successfully! Redirecting...');
+                
+                // Mark OTP inputs as valid
+                otpDigits.forEach(digit => {
+                    digit.classList.add('valid');
+                    digit.classList.remove('invalid');
+                });
+
+                // Redirect to password reset page after short delay
+                setTimeout(() => {
+                    window.location.href = `{{ url_for('reset_password', token='') }}${data.reset_token}`;
+                }, 1500);
+            } else {
+                showOtpError(data.message || 'Invalid OTP code. Please try again.');
+                
+                // Mark OTP inputs as invalid
+                otpDigits.forEach(digit => {
+                    digit.classList.add('invalid');
+                    digit.classList.remove('valid');
+                });
+                
+                // Clear OTP inputs after error
+                setTimeout(() => {
+                    otpDigits.forEach(digit => {
+                        digit.value = '';
+                        digit.classList.remove('invalid');
+                    });
+                    updateOtpInputStyle();
+                    otpDigits[0].focus();
+                }, 2000);
+                
+                verifyOtpBtn.disabled = false;
+            }
+        } catch (error) {
+            console.error('Verify OTP error:', error);
+            otpLoading.classList.add('d-none');
+            verifyOtpBtn.classList.remove('btn-loading');
+            showOtpError('Network error. Please check your connection and try again.');
+            verifyOtpBtn.disabled = false;
+        }
+    });
+
+    // Helper functions
+    function showOtpSuccess(message) {
+        otpSuccess.innerHTML = `<i class="bi bi-check-circle-fill me-2"></i><strong>Success!</strong> ${message}`;
+        otpSuccess.classList.remove('d-none');
+        otpError.classList.add('d-none');
+    }
+
+    function showOtpError(message) {
+        errorMessage.textContent = message;
+        otpError.classList.remove('d-none');
+        otpSuccess.classList.add('d-none');
+    }
+
+    // Auto-submit when all digits are filled
+    function autoSubmitWhenComplete() {
+        const otpCode = getOtpCode();
+        if (otpCode.length === 6) {
+            console.log('Auto-submitting OTP:', otpCode);
+            verifyOtpBtn.click();
+        }
+    }
+
+    // Initialize everything
+    initializeOtpInputs();
+    startTimer();
+    otpDigits[0].focus();
+    
+    // Add console logging for debugging
+    console.log('OTP Verification page loaded successfully');
+});
+</script>
+{% endblock %}

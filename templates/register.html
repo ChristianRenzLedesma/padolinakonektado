@@ -1,102 +1,594 @@
-{% extends "base.html" %}
+{% extends "public_base.html" %}
 
 {% block title %}Register - PadolinaKonektado{% endblock %}
 
+{% block main_class %}register-main{% endblock %}
+
 {% block content %}
-<div class="row justify-content-center">
-    <div class="col-md-8 col-lg-7">
-        <div class="card shadow-lg border-0">
-            <div class="card-header bg-success text-white text-center py-4">
-                <h2 class="mb-0">
-                    <i class="bi bi-person-plus"></i><br>
-                    Join PadolinaKonektado
-                </h2>
-                <p class="mb-0 mt-2">Register as a Barangay Padolina Member</p>
-            </div>
-            <div class="card-body p-5">
-                <form method="POST" action="{{ url_for('register') }}" onsubmit="return validateForm()">
-                    <div class="row">
-                        <div class="col-md-6">
-                            <div class="mb-3">
-                                <label for="first_name" class="form-label">First Name</label>
-                                <input type="text" class="form-control" id="first_name" name="first_name" required>
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-10 col-lg-8">
+            <div class="card-modern">
+                <div class="card-header-modern text-center py-4">
+                    <h2 class="mb-0">
+                        <i class="bi bi-person-plus me-2"></i>
+                        Join PadolinaKonektado
+                    </h2>
+                    <p class="mb-0 mt-2 text-light">Register as a Barangay Padolina Member</p>
+                </div>
+                <div class="card-body p-5">
+                    <form method="POST" action="{{ url_for('register') }}" onsubmit="return validateForm()">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="first_name" class="form-label fw-semibold text-dark">First Name</label>
+                                    <input type="text" class="form-control form-control-lg" id="first_name" name="first_name" required placeholder="Enter your first name">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="last_name" class="form-label fw-semibold text-dark">Last Name</label>
+                                    <input type="text" class="form-control form-control-lg" id="last_name" name="last_name" required placeholder="Enter your last name">
+                                </div>
                             </div>
                         </div>
-                        <div class="col-md-6">
-                            <div class="mb-3">
-                                <label for="last_name" class="form-label">Last Name</label>
-                                <input type="text" class="form-control" id="last_name" name="last_name" required>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="username" class="form-label fw-semibold text-dark">Username</label>
+                                    <input type="text" class="form-control form-control-lg" id="username" name="username" required placeholder="Choose a username">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="email" class="form-label fw-semibold text-dark">Email</label>
+                                    <input type="email" class="form-control form-control-lg" id="email" name="email" required placeholder="your.email@example.com">
+                                </div>
                             </div>
                         </div>
-                    </div>
 
-                    <div class="row">
-                        <div class="col-md-6">
-                            <div class="mb-3">
-                                <label for="username" class="form-label">Username</label>
-                                <input type="text" class="form-control" id="username" name="username" required>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="password" class="form-label fw-semibold text-dark">Password</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text bg-light">
+                                            <i class="bi bi-lock text-primary"></i>
+                                        </span>
+                                        <input type="password" class="form-control form-control-lg" id="password" name="password" required placeholder="Enter your password">
+                                        <button class="btn btn-outline-secondary toggle-password" type="button" data-target="password">
+                                            <i class="bi bi-eye"></i>
+                                        </button>
+                                    </div>
+                                    <div class="form-text text-muted">Password must be at least 6 characters with uppercase, lowercase, and number.</div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="confirm_password" class="form-label fw-semibold text-dark">Confirm Password</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text bg-light">
+                                            <i class="bi bi-lock text-primary"></i>
+                                        </span>
+                                        <input type="password" class="form-control form-control-lg" id="confirm_password" name="confirm_password" required placeholder="Confirm your password">
+                                        <button class="btn btn-outline-secondary toggle-password" type="button" data-target="confirm_password">
+                                            <i class="bi bi-eye"></i>
+                                        </button>
+                                    </div>
+                                    <div class="form-text text-muted">Re-enter your password to confirm.</div>
+                                </div>
                             </div>
                         </div>
-                        <div class="col-md-6">
-                            <div class="mb-3">
-                                <label for="email" class="form-label">Email</label>
-                                <input type="email" class="form-control" id="email" name="email" required>
-                            </div>
+
+                        <div class="mb-3">
+                            <label for="address" class="form-label fw-semibold text-dark">Address</label>
+                            <textarea class="form-control form-control-lg" id="address" name="address" rows="2" required placeholder="Enter your complete address within Barangay Padolina"></textarea>
+                            <div class="form-text text-muted">Please provide your complete address within Barangay Padolina.</div>
                         </div>
-                    </div>
 
-                    <div class="row">
-                        <div class="col-md-6">
-                            <div class="mb-3">
-                                <label for="password" class="form-label">Password</label>
-                                <input type="password" class="form-control" id="password" name="password" required>
-                                <div class="form-text">Password must be at least 6 characters long.</div>
-                            </div>
+                        <div class="mb-4">
+                            <label for="phone" class="form-label fw-semibold text-dark">Phone Number</label>
+                            <input type="tel" class="form-control form-control-lg" id="phone" name="phone" required placeholder="Enter your phone number">
                         </div>
-                        <div class="col-md-6">
-                            <div class="mb-3">
-                                <label for="confirm_password" class="form-label">Confirm Password</label>
-                                <input type="password" class="form-control" id="confirm_password" name="confirm_password" required>
-                            </div>
+
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-warning btn-lg fw-semibold py-3 reg-outline">
+                                <i class="bi bi-person-check me-2"></i> Register Account
+                            </button>
                         </div>
-                    </div>
+                    </form>
 
-                    <div class="mb-3">
-                        <label for="user_type" class="form-label">I am a:</label>
-                        <select class="form-select" id="user_type" name="user_type" required>
-                            <option value="">Select your role</option>
-                            <option value="resident">Resident</option>
-                            <option value="volunteer">Community Volunteer</option>
-                            <option value="official">Barangay Official</option>
-                        </select>
+                    <div class="text-center mt-4">
+                        <p class="mb-0 text-dark">Already have an account?</p>
+                        <a href="{{ url_for('login') }}" class="btn btn-outline-primary btn-lg mt-2">
+                            <i class="bi bi-box-arrow-in-right me-2"></i> Login Here
+                        </a>
                     </div>
-
-                    <div class="mb-3">
-                        <label for="address" class="form-label">Address</label>
-                        <textarea class="form-control" id="address" name="address" rows="2" required></textarea>
-                        <div class="form-text">Please provide your complete address within Barangay Padolina.</div>
-                    </div>
-
-                    <div class="mb-4">
-                        <label for="phone" class="form-label">Phone Number</label>
-                        <input type="tel" class="form-control" id="phone" name="phone" required>
-                    </div>
-
-                    <div class="d-grid">
-                        <button type="submit" class="btn btn-success btn-lg">
-                            <i class="bi bi-person-check"></i> Register Account
-                        </button>
-                    </div>
-                </form>
-
-                <div class="text-center mt-4">
-                    <p class="mb-0">Already have an account?</p>
-                    <a href="{{ url_for('login') }}" class="btn btn-outline-success btn-sm mt-2">
-                        Login Here
-                    </a>
                 </div>
             </div>
         </div>
     </div>
 </div>
+
+<script>
+// Password visibility toggle
+document.addEventListener('DOMContentLoaded', function() {
+    // Add click event to all toggle password buttons
+    document.querySelectorAll('.toggle-password').forEach(button => {
+        button.addEventListener('click', function() {
+            const targetId = this.getAttribute('data-target');
+            const passwordInput = document.getElementById(targetId);
+            const icon = this.querySelector('i');
+            
+            // Toggle password visibility
+            const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+            passwordInput.setAttribute('type', type);
+            
+            // Toggle icon
+            icon.classList.toggle('bi-eye');
+            icon.classList.toggle('bi-eye-slash');
+            
+            // Toggle button active state
+            this.classList.toggle('active');
+        });
+    });
+});
+
+function validateForm() {
+    // Get form values
+    const firstName = document.getElementById('first_name').value.trim();
+    const lastName = document.getElementById('last_name').value.trim();
+    const username = document.getElementById('username').value.trim();
+    const email = document.getElementById('email').value.trim();
+    const password = document.getElementById('password').value;
+    const confirmPassword = document.getElementById('confirm_password').value;
+    const address = document.getElementById('address').value.trim();
+    const phone = document.getElementById('phone').value.trim();
+    
+    // Reset previous error states
+    document.querySelectorAll('.form-control').forEach(input => {
+        input.classList.remove('is-invalid');
+    });
+    document.querySelectorAll('.invalid-feedback').forEach(el => el.remove());
+    
+    let isValid = true;
+    
+    // Validate first name
+    if (firstName === '') {
+        showFieldError('first_name', 'First name is required');
+        isValid = false;
+    } else if (firstName.length < 2) {
+        showFieldError('first_name', 'First name must be at least 2 characters');
+        isValid = false;
+    }
+    
+    // Validate last name
+    if (lastName === '') {
+        showFieldError('last_name', 'Last name is required');
+        isValid = false;
+    } else if (lastName.length < 2) {
+        showFieldError('last_name', 'Last name must be at least 2 characters');
+        isValid = false;
+    }
+    
+    // Validate username
+    if (username === '') {
+        showFieldError('username', 'Username is required');
+        isValid = false;
+    } else if (username.length < 3) {
+        showFieldError('username', 'Username must be at least 3 characters');
+        isValid = false;
+    } else if (!/^[a-zA-Z0-9_]+$/.test(username)) {
+        showFieldError('username', 'Username can only contain letters, numbers, and underscores');
+        isValid = false;
+    }
+    
+    // Validate email
+    if (email === '') {
+        showFieldError('email', 'Email is required');
+        isValid = false;
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+        showFieldError('email', 'Please enter a valid email address');
+        isValid = false;
+    }
+    
+    // Validate password
+    if (password === '') {
+        showFieldError('password', 'Password is required');
+        isValid = false;
+    } else if (password.length < 6) {
+        showFieldError('password', 'Password must be at least 6 characters long');
+        isValid = false;
+    } else if (!/(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/.test(password)) {
+        showFieldError('password', 'Password must contain at least one uppercase letter, one lowercase letter, and one number');
+        isValid = false;
+    }
+    
+    // Validate confirm password
+    if (confirmPassword === '') {
+        showFieldError('confirm_password', 'Please confirm your password');
+        isValid = false;
+    } else if (password !== confirmPassword) {
+        showFieldError('confirm_password', 'Passwords do not match');
+        isValid = false;
+    }
+    
+    // Validate address
+    if (address === '') {
+        showFieldError('address', 'Address is required');
+        isValid = false;
+    } else if (address.length < 10) {
+        showFieldError('address', 'Please provide a complete address');
+        isValid = false;
+    }
+    
+    // Validate phone
+    if (phone === '') {
+        showFieldError('phone', 'Phone number is required');
+        isValid = false;
+    } else if (!/^[0-9+\-\s()]+$/.test(phone)) {
+        showFieldError('phone', 'Please enter a valid phone number');
+        isValid = false;
+    } else if (phone.replace(/\D/g, '').length < 10) {
+        showFieldError('phone', 'Phone number must be at least 10 digits');
+        isValid = false;
+    }
+    
+    if (!isValid) {
+        // Scroll to first error
+        const firstError = document.querySelector('.is-invalid');
+        if (firstError) {
+            firstError.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            firstError.focus();
+        }
+    }
+    
+    return isValid;
+}
+
+function showFieldError(fieldId, message) {
+    const field = document.getElementById(fieldId);
+    field.classList.add('is-invalid');
+    
+    // Remove existing error message if any
+    const existingError = field.parentNode.querySelector('.invalid-feedback');
+    if (existingError) {
+        existingError.remove();
+    }
+    
+    // Add new error message
+    const errorDiv = document.createElement('div');
+    errorDiv.className = 'invalid-feedback';
+    errorDiv.style.display = 'block';
+    errorDiv.style.color = '#dc3545';
+    errorDiv.style.fontSize = '0.875rem';
+    errorDiv.style.marginTop = '0.25rem';
+    errorDiv.textContent = message;
+    field.parentNode.appendChild(errorDiv);
+}
+
+// Real-time validation
+document.addEventListener('DOMContentLoaded', function() {
+    const fields = ['first_name', 'last_name', 'username', 'email', 'password', 'confirm_password', 'address', 'phone'];
+    
+    fields.forEach(fieldId => {
+        const field = document.getElementById(fieldId);
+        if (field) {
+            field.addEventListener('blur', function() {
+                if (this.value.trim() !== '') {
+                    validateField(fieldId);
+                }
+            });
+        }
+    });
+    
+    // Password strength indicator
+    const passwordField = document.getElementById('password');
+    if (passwordField) {
+        passwordField.addEventListener('input', function() {
+            const password = this.value;
+            let strength = 0;
+            
+            if (password.length >= 6) strength++;
+            if (password.length >= 10) strength++;
+            if (/[a-z]/.test(password)) strength++;
+            if (/[A-Z]/.test(password)) strength++;
+            if (/\d/.test(password)) strength++;
+            if (/[^a-zA-Z\d]/.test(password)) strength++;
+            
+            updatePasswordStrength(strength);
+        });
+    }
+    
+    // Confirm password validation
+    const confirmPasswordField = document.getElementById('confirm_password');
+    if (confirmPasswordField) {
+        confirmPasswordField.addEventListener('input', function() {
+            const password = document.getElementById('password').value;
+            if (this.value && this.value !== password) {
+                showFieldError('confirm_password', 'Passwords do not match');
+            } else {
+                this.classList.remove('is-invalid');
+                const error = this.parentNode.querySelector('.invalid-feedback');
+                if (error) error.remove();
+            }
+        });
+    }
+});
+
+function validateField(fieldId) {
+    const field = document.getElementById(fieldId);
+    const value = field.value.trim();
+    let isValid = true;
+    let errorMessage = '';
+    
+    switch(fieldId) {
+        case 'first_name':
+        case 'last_name':
+            if (value.length < 2) {
+                errorMessage = 'Must be at least 2 characters';
+                isValid = false;
+            }
+            break;
+        case 'username':
+            if (value.length < 3) {
+                errorMessage = 'Must be at least 3 characters';
+                isValid = false;
+            } else if (!/^[a-zA-Z0-9_]+$/.test(value)) {
+                errorMessage = 'Only letters, numbers, and underscores';
+                isValid = false;
+            }
+            break;
+        case 'email':
+            if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) {
+                errorMessage = 'Invalid email format';
+                isValid = false;
+            }
+            break;
+        case 'password':
+            if (value.length < 6) {
+                errorMessage = 'Must be at least 6 characters';
+                isValid = false;
+            } else if (!/(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/.test(value)) {
+                errorMessage = 'Must contain uppercase, lowercase, and number';
+                isValid = false;
+            }
+            break;
+        case 'address':
+            if (value.length < 10) {
+                errorMessage = 'Please provide complete address';
+                isValid = false;
+            }
+            break;
+        case 'phone':
+            if (!/^[0-9+\-\s()]+$/.test(value)) {
+                errorMessage = 'Invalid phone format';
+                isValid = false;
+            } else if (value.replace(/\D/g, '').length < 10) {
+                errorMessage = 'Must be at least 10 digits';
+                isValid = false;
+            }
+            break;
+    }
+    
+    if (!isValid) {
+        showFieldError(fieldId, errorMessage);
+    } else {
+        field.classList.remove('is-invalid');
+        const error = field.parentNode.querySelector('.invalid-feedback');
+        if (error) error.remove();
+    }
+    
+    return isValid;
+}
+
+function updatePasswordStrength(strength) {
+    const passwordField = document.getElementById('password');
+    let strengthText = '';
+    let strengthColor = '';
+    
+    if (strength <= 2) {
+        strengthText = 'Weak';
+        strengthColor = '#dc3545';
+    } else if (strength <= 4) {
+        strengthText = 'Medium';
+        strengthColor = '#ffc107';
+    } else {
+        strengthText = 'Strong';
+        strengthColor = '#28a745';
+    }
+    
+    // Update or create strength indicator
+    let strengthIndicator = passwordField.parentNode.querySelector('.password-strength');
+    if (!strengthIndicator) {
+        strengthIndicator = document.createElement('div');
+        strengthIndicator.className = 'password-strength';
+        strengthIndicator.style.fontSize = '0.875rem';
+        strengthIndicator.style.marginTop = '0.25rem';
+        passwordField.parentNode.appendChild(strengthIndicator);
+    }
+    
+    strengthIndicator.textContent = `Password strength: ${strengthText}`;
+    strengthIndicator.style.color = strengthColor;
+}
+</script>
+
+<style>
+    .register-main {
+        background: #f8f9fa;
+        min-height: 100vh;
+        padding: 2rem 0;
+    }
+
+    .card-modern {
+        background-color: white;
+        border-radius: 15px;
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+        border: none;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        overflow: hidden;
+    }
+
+    .card-header-modern {
+        background: linear-gradient(135deg, var(--secondary-color) 0%, var(--primary-color) 100%);
+        color: white;
+        border-radius: 15px 15px 0 0 !important;
+        padding: 1.5rem;
+        border: none;
+    }
+
+    .form-control, .form-select {
+        border: 2px solid #e9ecef;
+        border-radius: 10px;
+        transition: all 0.3s ease;
+        background: #fff;
+    }
+
+    .form-control:focus, .form-select:focus {
+        border-color: var(--secondary-color);
+        box-shadow: 0 0 0 0.2rem rgba(45, 107, 194, 0.15);
+        background: #fff;
+    }
+
+    .form-control-lg {
+        padding: 0.75rem 1rem;
+    }
+
+    .btn-warning {
+        background: linear-gradient(135deg, var(--accent-color) 0%, #ffc107 100%);
+        border: none;
+        color: var(--dark-color);
+        font-weight: 600;
+        transition: all 0.3s ease;
+        border-radius: 10px;
+    }
+
+    .btn-warning:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+    }
+
+    .btn-outline-primary {
+        border: 2px solid var(--secondary-color);
+        color: var(--secondary-color);
+        font-weight: 600;
+        transition: all 0.3s ease;
+        border-radius: 10px;
+    }
+
+    .btn-outline-primary:hover {
+        background: var(--secondary-color);
+        color: white;
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(45, 107, 194, 0.3);
+    }
+    
+    /* Form validation styles */
+    .form-control.is-invalid {
+        border-color: #dc3545;
+        background-color: #fff5f5;
+        box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.15);
+    }
+    
+    .form-control.is-invalid:focus {
+        border-color: #dc3545;
+        box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25);
+    }
+    
+    .form-control.is-valid {
+        border-color: #28a745;
+        background-color: #f8fff9;
+        box-shadow: 0 0 0 0.2rem rgba(40, 167, 69, 0.15);
+    }
+    
+    .form-control.is-valid:focus {
+        border-color: #28a745;
+        box-shadow: 0 0 0 0.2rem rgba(40, 167, 69, 0.25);
+    }
+    
+    .invalid-feedback {
+        display: block;
+        width: 100%;
+        margin-top: 0.25rem;
+        font-size: 0.875rem;
+        color: #dc3545;
+        animation: fadeIn 0.3s ease;
+    }
+    
+    .password-strength {
+        font-weight: 500;
+        margin-top: 0.5rem;
+        padding: 0.25rem 0.5rem;
+        border-radius: 4px;
+        background: rgba(0, 0, 0, 0.05);
+        display: inline-block;
+        transition: all 0.3s ease;
+    }
+    
+    .card-modern:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
+    }
+    
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(-10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+    
+    @keyframes shake {
+        0%, 100% { transform: translateX(0); }
+        25% { transform: translateX(-5px); }
+        75% { transform: translateX(5px); }
+    }
+    
+    .form-control.is-invalid {
+        animation: shake 0.5s ease;
+    }
+
+    /* Text readability improvements */
+    .form-label {
+        color: #2d3748 !important;
+        font-weight: 600;
+    }
+
+    .text-muted {
+        color: #6c757d !important;
+    }
+
+    .text-dark {
+        color: #2d3748 !important;
+    }
+
+    /* Responsive design */
+    @media (max-width: 768px) {
+        .card-body {
+            padding: 2rem !important;
+        }
+        
+        .form-control-lg {
+            padding: 0.6rem 0.8rem;
+            font-size: 0.9rem;
+        }
+        
+        .btn-lg {
+            padding: 0.75rem 1.5rem;
+            font-size: 1rem;
+        }
+    }
+
+    @media (max-width: 576px) {
+        .card-body {
+            padding: 1.5rem !important;
+        }
+        
+        .container.py-5 {
+            padding: 1rem 0 !important;
+        }
+        
+        .card-header-modern h2 {
+            font-size: 1.5rem;
+        }
+    }
+</style>
 {% endblock %}

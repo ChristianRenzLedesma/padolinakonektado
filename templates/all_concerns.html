@@ -1,0 +1,178 @@
+{% extends "base.html" %}
+
+{% block head %}
+{{ super() }}
+{% endblock %}
+
+{% block content %}
+<div class="container d-flex justify-content-center mt-4">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+    <div class="col-12">
+        {% for category, message in messages %}
+        <div class="alert alert-{{ category }} mb-3">{{ message }}</div>
+        {% endfor %}
+    </div>
+    {% endif %}
+    {% endwith %}
+
+    {% if not concerns %}
+    <div class="alert alert-info">No concerns have been reported yet.</div>
+    {% else %}
+    <div class="card"
+        style="max-width: 1400px; width: 95%; margin: 0 auto; box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);">
+        <div class="card-body p-4">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2 class="mb-0">All Reported Concerns</h2>
+            </div>
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Title</th>
+                            <th>Reported By</th>
+                            <th>Location</th>
+                            <th>Status</th>
+                            <th>Date Reported</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for concern in concerns %}
+                        <tr>
+                            <td>
+                                <div class="d-flex align-items-center">
+                                    {% if concern.image_path %}
+                                    <div class="mb-3">
+                                        <h6>Attachment:</h6>
+                                        <div class="d-flex justify-content-center">
+                                           <img src="{{ url_for('serve_concern_image', filename=concern.image_path.split('/')[-1]) }}"
+     class="img-fluid rounded" 
+     alt="Concern attachment"
+     style="max-height: 100px; width: 100px; object-fit: contain;"
+     onerror="this.onerror=null; this.src='{{ url_for('static', filename='img/default_concern.png') }}';">
+                                        </div>
+                                    </div>
+                                    {% endif %}
+                                    <div>
+                                        <strong>{{ concern.title }}</strong>
+                                        <div class="text-muted small">{{ concern.description|truncate(30) }}</div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                {{ concern.first_name }} {{ concern.last_name }}
+                                <small class="d-block text-muted">{{ concern.email }}</small>
+                            </td>
+                            <td>{{ concern.location or 'N/A' }}</td>
+                            <td>
+                                <span
+                                    class="badge bg-{{ 'success' if concern.status == 'resolved' else 'warning' if concern.status == 'in_progress' else 'secondary' }}">
+                                    {{ concern.status|replace('_', ' ')|title }}
+                                </span>
+                            </td>
+                            <td>{{ format_datetime(concern.created_at) }}</td>
+                            <td>
+                                <button class="btn btn-sm btn-outline-primary" data-bs-toggle="modal"
+                                    data-bs-target="#concernModal{{ concern.id }}">
+                                    <i class="fas fa-eye"></i> View
+                                </button>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Modals for each concern (moved outside card) -->
+    {% if concerns %}
+    {% for concern in concerns %}
+    <!-- Concern Detail Modal -->
+    <div class="modal fade" id="concernModal{{ concern.id }}" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content text-center">
+                <div class="modal-header justify-content-center">
+                    <h5 class="modal-title">{{ concern.title }}</h5>
+                    <button type="button" class="btn-close position-absolute end-0 me-3" data-bs-dismiss="modal"
+                        aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row justify-content-center mb-3">
+                        <div class="col-md-10">
+                            <div class="row">
+                                <div class="col-md-6 text-start">
+                                    <p><strong>Reported By:</strong> {{ concern.first_name }} {{ concern.last_name }}
+                                    </p>
+                                    <p><strong>Email:</strong> {{ concern.email }}</p>
+                                    <p><strong>Location:</strong> {{ concern.location or 'Not specified' }}</p>
+                                </div>
+                                <div class="col-md-6 text-start">
+                                    <p><strong>Status:</strong>
+                                        <span
+                                            class="badge bg-{{ 'success' if concern.status == 'resolved' else 'warning' if concern.status == 'in_progress' else 'secondary' }}">
+                                            {{ concern.status|replace('_', ' ')|title }}
+                                        </span>
+                                    </p>
+                                    <p><strong>Reported On:</strong> {{ format_datetime(concern.created_at) }}</p>
+                                    <p><strong>Last Updated:</strong> {{ format_datetime(concern.updated_at) }}</p>
+                                </div>
+                            </div>
+
+                            <div class="mb-3 text-start">
+                                <h6 class="text-center">Description:</h6>
+                                <p class="p-3 bg-light rounded text-center">{{ concern.description }}</p>
+                            </div>
+
+                            {% if concern.image_path %}
+                            <div class="mb-3">
+                                <h6>Attachment:</h6>
+                                <div class="d-flex justify-content-center">
+                                    <img src="{{ url_for('static', filename=concern.image_path) }}"
+                                        class="img-fluid rounded" alt="Concern attachment"
+                                        style="max-height: 300px; object-fit: contain;"
+                                        onerror="this.onerror=null; this.src='{{ url_for('static', filename='img/default_concern.png') }}'">
+                                </div>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer justify-content-center">
+                    <form method="POST" action="{{ url_for('update_concern_status', concern_id=concern.id) }}"
+                        class="d-inline-flex">
+                        <div class="input-group">
+                            <select name="status" class="form-select" style="min-width: 150px;">
+                                <option value="pending" {% if concern.status=='pending' %}selected{% endif %}>Pending
+                                </option>
+                                <option value="in_progress" {% if concern.status=='in_progress' %}selected{% endif %}>In
+                                    Progress</option>
+                                <option value="resolved" {% if concern.status=='resolved' %}selected{% endif %}>Resolved
+                                </option>
+                            </select>
+                            <button type="submit" class="btn btn-primary">Update Status</button>
+                        </div>
+                    </form>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    // Initialize tooltips
+    document.addEventListener('DOMContentLoaded', function () {
+        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+        var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+            return new bootstrap.Tooltip(tooltipTriggerEl);
+        });
+    });
+</script>
+{% endblock %}

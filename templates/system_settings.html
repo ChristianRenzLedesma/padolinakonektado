@@ -1,0 +1,773 @@
+{% extends "base.html" %}
+
+{% block head %}
+<style>
+    .accent-color-btn {
+        transition: all 0.3s ease;
+        position: relative;
+    }
+    
+    .accent-color-btn:hover {
+        transform: scale(1.1);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    }
+    
+    .accent-color-btn.active {
+        transform: scale(1.15);
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+    }
+    
+    .accent-color-btn.active::after {
+        content: '✓';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        color: white;
+        font-weight: bold;
+        font-size: 16px;
+        text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+    }
+    
+    .dark-mode .card {
+        background-color: #2d3748 !important;
+        color: #e2e8f0 !important;
+    }
+    
+    .dark-mode .card-header {
+        background-color: #4a5568 !important;
+        color: #e2e8f0 !important;
+    }
+    
+    .dark-mode .form-control,
+    .dark-mode .form-select {
+        background-color: #4a5568 !important;
+        color: #e2e8f0 !important;
+        border-color: #718096 !important;
+    }
+    
+    .dark-mode .form-label {
+        color: #e2e8f0 !important;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <h1 class="h3 mb-4">
+                <i class="fas fa-cogs me-2"></i>System Settings
+            </h1>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Settings Navigation -->
+        <div class="col-md-3">
+            <div class="card">
+                <div class="card-body">
+                    <nav class="nav flex-column">
+                        <a class="nav-link active" href="#appearance" data-bs-toggle="pill">
+                            <i class="fas fa-palette me-2"></i>Appearance
+                        </a>
+                        <a class="nav-link" href="#notifications" data-bs-toggle="pill">
+                            <i class="fas fa-bell me-2"></i>Notifications
+                        </a>
+                        <a class="nav-link" href="#security" data-bs-toggle="pill">
+                            <i class="fas fa-shield-alt me-2"></i>Security
+                        </a>
+                        <a class="nav-link" href="#system" data-bs-toggle="pill">
+                            <i class="fas fa-server me-2"></i>System
+                        </a>
+                        <a class="nav-link" href="#backup" data-bs-toggle="pill">
+                            <i class="fas fa-database me-2"></i>Backup & Maintenance
+                        </a>
+                        <a class="nav-link" href="#email" data-bs-toggle="pill">
+                            <i class="fas fa-envelope me-2"></i>Email Settings
+                        </a>
+                    </nav>
+                </div>
+            </div>
+        </div>
+
+        <!-- Settings Content -->
+        <div class="col-md-9">
+            <div class="tab-content">
+                <!-- Appearance Settings -->
+                <div class="tab-pane fade show active" id="appearance">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="card-title mb-0">
+                                <i class="fas fa-palette me-2"></i>Appearance Settings
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="mb-4">
+                                <h6>Theme Mode</h6>
+                                <small class="text-muted">Choose theme mode for the interface</small>
+                                <div class="row mt-2">
+                                    <div class="col-md-4">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="radio" name="themeVariant" id="themeLight" value="light" checked>
+                                            <label class="form-check-label" for="themeLight">
+                                                <i class="fas fa-sun me-2"></i>Light
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="radio" name="themeVariant" id="themeDark" value="dark">
+                                            <label class="form-check-label" for="themeDark">
+                                                <i class="fas fa-moon me-2"></i>Dark
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="radio" name="themeVariant" id="themeSystem" value="system">
+                                            <label class="form-check-label" for="themeSystem">
+                                                <i class="fas fa-desktop me-2"></i>System
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="mb-4">
+                                <h6>Accent Color</h6>
+                                <div class="d-flex gap-2">
+                                    <button class="btn btn-sm rounded-circle accent-color-btn" style="width: 40px; height: 40px; background: linear-gradient(135deg, #6c757d 0%, #5a6268 100%); border: 2px solid #6c757d;" data-color="default" onclick="setAccentColor('default')" title="Default Gray">
+                                        <i class="fas fa-undo text-white" style="font-size: 14px;"></i>
+                                    </button>
+                                    <button class="btn btn-sm rounded-circle accent-color-btn" style="width: 40px; height: 40px; background-color: #007bff; border: 2px solid #007bff;" data-color="primary" onclick="setAccentColor('primary')" title="Primary Blue"></button>
+                                    <button class="btn btn-sm rounded-circle accent-color-btn" style="width: 40px; height: 40px; background-color: #28a745; border: 2px solid #28a745;" data-color="success" onclick="setAccentColor('success')" title="Success Green"></button>
+                                    <button class="btn btn-sm rounded-circle accent-color-btn" style="width: 40px; height: 40px; background-color: #17a2b8; border: 2px solid #17a2b8;" data-color="info" onclick="setAccentColor('info')" title="Info Cyan"></button>
+                                    <button class="btn btn-sm rounded-circle accent-color-btn" style="width: 40px; height: 40px; background-color: #ffc107; border: 2px solid #ffc107;" data-color="warning" onclick="setAccentColor('warning')" title="Warning Yellow"></button>
+                                    <button class="btn btn-sm rounded-circle accent-color-btn" style="width: 40px; height: 40px; background-color: #dc3545; border: 2px solid #dc3545;" data-color="danger" onclick="setAccentColor('danger')" title="Danger Red"></button>
+                                </div>
+                            </div>
+
+                            <div class="mb-4">
+                                <h6>Font Size</h6>
+                                <select class="form-select" id="fontSize">
+                                    <option value="small">Small</option>
+                                    <option value="medium" selected>Medium</option>
+                                    <option value="large">Large</option>
+                                    <option value="extra-large">Extra Large</option>
+                                </select>
+                            </div>
+
+                            <button class="btn btn-primary" onclick="saveAppearanceSettings()">
+                                <i class="fas fa-save me-2"></i>Save Appearance Settings
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Notification Settings -->
+                <div class="tab-pane fade" id="notifications">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="card-title mb-0">
+                                <i class="fas fa-bell me-2"></i>Notification Settings
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="mb-4">
+                                <h6>Email Notifications</h6>
+                                <div class="form-check form-switch mb-2">
+                                    <input class="form-check-input" type="checkbox" id="emailNotifications" checked>
+                                    <label class="form-check-label" for="emailNotifications">
+                                        Enable email notifications
+                                    </label>
+                                </div>
+                                <div class="ms-4">
+                                    <div class="form-check mb-2">
+                                        <input class="form-check-input" type="checkbox" id="newConcernEmail" checked>
+                                        <label class="form-check-label" for="newConcernEmail">
+                                            New concerns submitted
+                                        </label>
+                                    </div>
+                                    <div class="form-check mb-2">
+                                        <input class="form-check-input" type="checkbox" id="newUserEmail" checked>
+                                        <label class="form-check-label" for="newUserEmail">
+                                            New user registrations
+                                        </label>
+                                    </div>
+                                    <div class="form-check mb-2">
+                                        <input class="form-check-input" type="checkbox" id="systemUpdatesEmail">
+                                        <label class="form-check-label" for="systemUpdatesEmail">
+                                            System updates and maintenance
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="mb-4">
+                                <h6>Browser Notifications</h6>
+                                <div class="form-check form-switch mb-2">
+                                    <input class="form-check-input" type="checkbox" id="browserNotifications">
+                                    <label class="form-check-label" for="browserNotifications">
+                                        Enable browser notifications
+                                    </label>
+                                </div>
+                                <div class="form-check form-switch mb-2">
+                                    <input class="form-check-input" type="checkbox" id="soundAlerts">
+                                    <label class="form-check-label" for="soundAlerts">
+                                        Enable sound alerts
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div class="mb-4">
+                                <h6>System Notifications</h6>
+                                <div class="form-check form-switch mb-2">
+                                    <input class="form-check-input" type="checkbox" id="systemNotifications" checked>
+                                    <label class="form-check-label" for="systemNotifications">
+                                        Enable in-system notifications
+                                    </label>
+                                </div>
+                                <div class="ms-4">
+                                    <div class="form-check mb-2">
+                                        <input class="form-check-input" type="checkbox" id="loginAlerts">
+                                        <label class="form-check-label" for="loginAlerts">
+                                            Login alerts and security notifications
+                                        </label>
+                                    </div>
+                                    <div class="form-check mb-2">
+                                        <input class="form-check-input" type="checkbox" id="backupReminders" checked>
+                                        <label class="form-check-label" for="backupReminders">
+                                            Backup reminders
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <button class="btn btn-primary" onclick="saveNotificationSettings()">
+                                <i class="fas fa-save me-2"></i>Save Notification Settings
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Security Settings -->
+                <div class="tab-pane fade" id="security">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="card-title mb-0">
+                                <i class="fas fa-shield-alt me-2"></i>Security Settings
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="mb-4">
+                                <h6>Password Policy</h6>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label class="form-label">Minimum Password Length</label>
+                                            <input type="number" class="form-control" id="minPasswordLength" value="8" min="6" max="20">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label class="form-label">Password Expiry (days)</label>
+                                            <input type="number" class="form-control" id="passwordExpiry" value="90" min="0" max="365">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-check form-switch mb-2">
+                                    <input class="form-check-input" type="checkbox" id="requireSpecialChars" checked>
+                                    <label class="form-check-label" for="requireSpecialChars">
+                                        Require special characters
+                                    </label>
+                                </div>
+                                <div class="form-check form-switch mb-2">
+                                    <input class="form-check-input" type="checkbox" id="requireNumbers" checked>
+                                    <label class="form-check-label" for="requireNumbers">
+                                        Require numbers
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div class="mb-4">
+                                <h6>Session Management</h6>
+                                <div class="mb-3">
+                                    <label class="form-label">Session Timeout (minutes)</label>
+                                    <input type="number" class="form-control" id="sessionTimeout" value="30" min="5" max="480">
+                                </div>
+                                <div class="form-check form-switch mb-2">
+                                    <input class="form-check-input" type="checkbox" id="rememberMe" checked>
+                                    <label class="form-check-label" for="rememberMe">
+                                        Allow "Remember Me" functionality
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div class="mb-4">
+                                <h6>Login Security</h6>
+                                <div class="form-check form-switch mb-2">
+                                    <input class="form-check-input" type="checkbox" id="twoFactorAuth">
+                                    <label class="form-check-label" for="twoFactorAuth">
+                                        Enable Two-Factor Authentication (2FA)
+                                    </label>
+                                </div>
+                                <div class="form-check form-switch mb-2">
+                                    <input class="form-check-input" type="checkbox" id="loginAttempts" checked>
+                                    <label class="form-check-label" for="loginAttempts">
+                                        Limit login attempts
+                                    </label>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Max Login Attempts</label>
+                                    <input type="number" class="form-control" id="maxLoginAttempts" value="5" min="3" max="10">
+                                </div>
+                            </div>
+
+                            <button class="btn btn-primary" onclick="saveSecuritySettings()">
+                                <i class="fas fa-save me-2"></i>Save Security Settings
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- System Settings -->
+                <div class="tab-pane fade" id="system">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="card-title mb-0">
+                                <i class="fas fa-server me-2"></i>System Configuration
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="mb-4">
+                                <h6>General Settings</h6>
+                                <div class="mb-3">
+                                    <label class="form-label">System Name</label>
+                                    <input type="text" class="form-control" id="systemName" value="Padolina Konektado">
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">System Description</label>
+                                    <textarea class="form-control" id="systemDescription" rows="3">Community Management System</textarea>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Admin Email</label>
+                                    <input type="email" class="form-control" id="adminEmail" value="admin@padolina.com">
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Timezone</label>
+                                    <select class="form-select" id="systemTimezone">
+                                        <option value="Asia/Manila" selected>Asia/Manila (Philippines Time)</option>
+                                        <option value="UTC">UTC (Coordinated Universal Time)</option>
+                                        <option value="America/New_York">America/New_York (EST)</option>
+                                        <option value="America/Los_Angeles">America/Los_Angeles (PST)</option>
+                                        <option value="Europe/London">Europe/London (GMT)</option>
+                                        <option value="Asia/Tokyo">Asia/Tokyo (JST)</option>
+                                        <option value="Asia/Singapore">Asia/Singapore (SGT)</option>
+                                        <option value="Australia/Sydney">Australia/Sydney (AEST)</option>
+                                    </select>
+                                    <div class="form-text">Current server time: <span id="currentServerTime">Loading...</span></div>
+                                </div>
+                            </div>
+
+                            <div class="mb-4">
+                                <h6>User Settings</h6>
+                                <div class="form-check form-switch mb-2">
+                                    <input class="form-check-input" type="checkbox" id="userRegistration" checked>
+                                    <label class="form-check-label" for="userRegistration">
+                                        Allow user registration
+                                    </label>
+                                </div>
+                                <div class="form-check form-switch mb-2">
+                                    <input class="form-check-input" type="checkbox" id="emailVerification" checked>
+                                    <label class="form-check-label" for="emailVerification">
+                                        Require email verification
+                                    </label>
+                                </div>
+                                <div class="form-check form-switch mb-2">
+                                    <input class="form-check-input" type="checkbox" id="adminApproval">
+                                    <label class="form-check-label" for="adminApproval">
+                                        Require admin approval for new users
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div class="mb-4">
+                                <h6>Content Settings</h6>
+                                <div class="mb-3">
+                                    <label class="form-label">Items per page</label>
+                                    <select class="form-select" id="itemsPerPage">
+                                        <option value="10">10</option>
+                                        <option value="25" selected>25</option>
+                                        <option value="50">50</option>
+                                        <option value="100">100</option>
+                                    </select>
+                                </div>
+                                <div class="form-check form-switch mb-2">
+                                    <input class="form-check-input" type="checkbox" id="autoSave" checked>
+                                    <label class="form-check-label" for="autoSave">
+                                        Enable auto-save for forms
+                                    </label>
+                                </div>
+                            </div>
+
+                            <button class="btn btn-primary" onclick="saveSystemSettings()">
+                                <i class="fas fa-save me-2"></i>Save System Settings
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Backup & Maintenance -->
+                <div class="tab-pane fade" id="backup">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="card-title mb-0">
+                                <i class="fas fa-database me-2"></i>Backup & Maintenance
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="mb-4">
+                                <h6>Automatic Backup</h6>
+                                <div class="form-check form-switch mb-2">
+                                    <input class="form-check-input" type="checkbox" id="autoBackup" checked>
+                                    <label class="form-check-label" for="autoBackup">
+                                        Enable automatic backup
+                                    </label>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Backup Frequency</label>
+                                    <select class="form-select" id="backupFrequency">
+                                        <option value="daily">Daily</option>
+                                        <option value="weekly" selected>Weekly</option>
+                                        <option value="monthly">Monthly</option>
+                                    </select>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Retention Period (days)</label>
+                                    <input type="number" class="form-control" id="backupRetention" value="30" min="7" max="365">
+                                </div>
+                            </div>
+
+                            <div class="mb-4">
+                                <h6>Manual Operations</h6>
+                                <div class="d-grid gap-2 d-md-flex">
+                                    <button class="btn btn-primary" onclick="backupNow()">
+                                        <i class="fas fa-download me-2"></i>Backup Now
+                                    </button>
+                                    <button class="btn btn-info" onclick="optimizeDatabase()">
+                                        <i class="fas fa-tools me-2"></i>Optimize Database
+                                    </button>
+                                    <button class="btn btn-warning" onclick="clearCache()">
+                                        <i class="fas fa-broom me-2"></i>Clear Cache
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div class="mb-4">
+                                <h6>System Information</h6>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <p class="mb-1"><strong>Database Size:</strong> <span id="dbSize">Calculating...</span></p>
+                                        <p class="mb-1"><strong>Last Backup:</strong> <span id="lastBackup">Never</span></p>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <p class="mb-1"><strong>System Version:</strong> 1.0.0</p>
+                                        <p class="mb-1"><strong>Uptime:</strong> <span id="uptime">Calculating...</span></p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <button class="btn btn-primary" onclick="saveBackupSettings()">
+                                <i class="fas fa-save me-2"></i>Save Backup Settings
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Email Settings -->
+                <div class="tab-pane fade" id="email">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="card-title mb-0">
+                                <i class="fas fa-envelope me-2"></i>Email Configuration
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="mb-4">
+                                <h6>SMTP Settings</h6>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label class="form-label">SMTP Server</label>
+                                            <input type="text" class="form-control" id="smtpServer" placeholder="smtp.gmail.com">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label class="form-label">Port</label>
+                                            <input type="number" class="form-control" id="smtpPort" value="587">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label class="form-label">Username</label>
+                                            <input type="email" class="form-control" id="smtpUsername" placeholder="your-email@gmail.com">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label class="form-label">Password</label>
+                                            <input type="password" class="form-control" id="smtpPassword" placeholder="App password">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-check form-switch mb-2">
+                                    <input class="form-check-input" type="checkbox" id="smtpTLS" checked>
+                                    <label class="form-check-label" for="smtpTLS">
+                                        Use TLS/SSL
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div class="mb-4">
+                                <h6>Email Templates</h6>
+                                <div class="mb-3">
+                                    <label class="form-label">From Email</label>
+                                    <input type="email" class="form-control" id="fromEmail" value="noreply@padolina.com">
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">From Name</label>
+                                    <input type="text" class="form-control" id="fromName" value="Padolina Konektado">
+                                </div>
+                            </div>
+
+                            <div class="mb-4">
+                                <h6>Test Configuration</h6>
+                                <div class="input-group">
+                                    <input type="email" class="form-control" id="testEmail" placeholder="Enter test email">
+                                    <button class="btn btn-outline-primary" onclick="testEmailConfig()">
+                                        <i class="fas fa-paper-plane me-2"></i>Send Test Email
+                                    </button>
+                                </div>
+                            </div>
+
+                            <button class="btn btn-primary" onclick="saveEmailSettings()">
+                                <i class="fas fa-save me-2"></i>Save Email Settings
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+/* Dark mode styles */
+.dark-mode {
+    background-color: #1a1a1a !important;
+    color: #ffffff !important;
+}
+
+.dark-mode .card {
+    background-color: #2d2d2d !important;
+    border-color: #404040 !important;
+    color: #ffffff !important;
+}
+
+.dark-mode .card-header {
+    background-color: #3a3a3a !important;
+    border-color: #404040 !important;
+    color: #ffffff !important;
+}
+
+.dark-mode .card-body {
+    color: #ffffff !important;
+}
+
+.dark-mode .card-title {
+    color: #ffffff !important;
+}
+
+.dark-mode .form-control,
+.dark-mode .form-select {
+    background-color: #3a3a3a !important;
+    border-color: #404040 !important;
+    color: #ffffff !important;
+}
+
+.dark-mode .form-control:focus,
+.dark-mode .form-select:focus {
+    background-color: #3a3a3a !important;
+    border-color: #007bff !important;
+    color: #ffffff !important;
+}
+
+.dark-mode .nav-link {
+    color: #b0b0b0 !important;
+}
+
+.dark-mode .nav-link.active {
+    background-color: #007bff !important;
+    color: #ffffff !important;
+}
+
+.dark-mode .nav-link:hover {
+    color: #ffffff !important;
+}
+
+.dark-mode .navbar {
+    background-color: #2d2d2d !important;
+    border-color: #404040 !important;
+}
+
+.dark-mode .sidebar {
+    background-color: #2d2d2d !important;
+    border-color: #404040 !important;
+}
+
+.dark-mode .btn {
+    color: #ffffff !important;
+}
+
+.dark-mode .btn-primary {
+    background-color: #007bff !important;
+    border-color: #007bff !important;
+}
+
+.dark-mode .btn-secondary {
+    background-color: #6c757d !important;
+    border-color: #6c757d !important;
+}
+
+.dark-mode .table {
+    color: #ffffff !important;
+}
+
+.dark-mode .table th {
+    background-color: #3a3a3a !important;
+    border-color: #404040 !important;
+    color: #ffffff !important;
+}
+
+.dark-mode .table td {
+    border-color: #404040 !important;
+    color: #ffffff !important;
+}
+
+.dark-mode h1,
+.dark-mode h2,
+.dark-mode h3,
+.dark-mode h4,
+.dark-mode h5,
+.dark-mode h6 {
+    color: #ffffff !important;
+}
+
+.dark-mode label {
+    color: #ffffff !important;
+}
+
+.dark-mode .form-check-label {
+    color: #ffffff !important;
+}
+
+.dark-mode .text-muted {
+    color: #b0b0b0 !important;
+}
+
+.dark-mode .modal-content {
+    background-color: #2d2d2d !important;
+    color: #ffffff !important;
+}
+
+.dark-mode .modal-header {
+    background-color: #3a3a3a !important;
+    border-color: #404040 !important;
+    color: #ffffff !important;
+}
+
+.dark-mode .modal-body {
+    color: #ffffff !important;
+}
+
+.dark-mode .dropdown-menu {
+    background-color: #2d2d2d !important;
+    border-color: #404040 !important;
+}
+
+.dark-mode .dropdown-item {
+    color: #ffffff !important;
+}
+
+.dark-mode .dropdown-item:hover {
+    background-color: #3a3a3a !important;
+    color: #ffffff !important;
+}
+
+/* Accent color themes */
+.accent-primary {
+    --bs-primary: #007bff;
+    --bs-primary-hover: #0056b3;
+}
+
+.accent-success {
+    --bs-primary: #28a745;
+    --bs-primary-hover: #1e7e34;
+}
+
+.accent-info {
+    --bs-primary: #17a2b8;
+    --bs-primary-hover: #117a8b;
+}
+
+.accent-warning {
+    --bs-primary: #ffc107;
+    --bs-primary-hover: #e0a800;
+}
+
+.accent-danger {
+    --bs-primary: #dc3545;
+    --bs-primary-hover: #c82333;
+}
+
+/* Theme transition */
+body {
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.card {
+    transition: background-color 0.3s ease, border-color 0.3s ease;
+}
+
+.form-control,
+.form-select {
+    transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
+}
+
+/* Font size variations */
+.font-small {
+    font-size: 0.875rem !important;
+}
+
+.font-medium {
+    font-size: 1rem !important;
+}
+
+.font-large {
+    font-size: 1.125rem !important;
+}
+
+.font-extra-large {
+    font-size: 1.25rem !important;
+}
+</style>
+
+<!-- Include settings management script -->
+<script src="{{ url_for('static', filename='js/settings.js') }}"></script>
+<script src="{{ url_for('static', filename='debug_accent.js') }}"></script>
+
+{% endblock %}

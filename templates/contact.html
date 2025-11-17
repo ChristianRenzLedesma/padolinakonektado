@@ -1,0 +1,619 @@
+{% extends "public_base.html" %}
+
+{% block title %}Contact - PadolinaKonektado{% endblock %}
+
+{% block main_class %}contact-main{% endblock %}
+
+{% block content %}
+<!-- Contact Hero -->
+<section class="contact-hero py-5 mb-5">
+    <div class="container">
+        <div class="row align-items-center min-vh-60">
+            <div class="col-lg-8 mx-auto text-center">
+                <h1 class="display-4 fw-bold text-dark mb-4">Contact Us</h1>
+                <p class="lead text-muted">
+                    We're here to help! Get in touch with us through any of the following channels.
+                </p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Contact Methods -->
+<section class="contact-methods py-5">
+    <div class="container">
+        <div class="row g-4">
+            <!-- Contact Info -->
+            <div class="col-lg-4">
+                <div class="contact-info-card card-modern p-4 h-100">
+                    <h3 class="text-dark mb-4">Get In Touch</h3>
+                    
+                    <div class="contact-item d-flex align-items-center mb-4">
+                        <div class="contact-icon me-3">
+                            <i class="bi bi-telephone-fill text-warning display-6"></i>
+                        </div>
+                        <div>
+                            <h5 class="text-dark mb-1">Phone</h5>
+                            <p class="text-muted mb-0">(02) 1234-5678</p>
+                            <p class="text-muted mb-0">(02) 8765-4321</p>
+                        </div>
+                    </div>
+                    
+                    <div class="contact-item d-flex align-items-center mb-4">
+                        <div class="contact-icon me-3">
+                            <i class="bi bi-envelope-fill text-warning display-6"></i>
+                        </div>
+                        <div>
+                            <h5 class="text-dark mb-1">Email</h5>
+                            <p class="text-muted mb-0">info@padolinakonektado.ph</p>
+                            <p class="text-muted mb-0">support@padolinakonektado.ph</p>
+                        </div>
+                    </div>
+                    
+                    <div class="contact-item d-flex align-items-center mb-4">
+                        <div class="contact-icon me-3">
+                            <i class="bi bi-geo-alt-fill text-warning display-6"></i>
+                        </div>
+                        <div>
+                            <h5 class="text-dark mb-1">Address</h5>
+                            <p class="text-muted mb-0">Barangay Padolina Hall</p>
+                            <p class="text-muted mb-0">Padolina Street, Your City</p>
+                            <p class="text-muted mb-0">Philippines 1000</p>
+                        </div>
+                    </div>
+                    
+                    <div class="contact-item d-flex align-items-center">
+                        <div class="contact-icon me-3">
+                            <i class="bi bi-clock-fill text-warning display-6"></i>
+                        </div>
+                        <div>
+                            <h5 class="text-dark mb-1">Office Hours</h5>
+                            <p class="text-muted mb-0">Monday - Friday: 8:00 AM - 5:00 PM</p>
+                            <p class="text-muted mb-0">Saturday: 8:00 AM - 12:00 PM</p>
+                            <p class="text-muted mb-0">Sunday: Closed</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Contact Form -->
+            <div class="col-lg-8">
+                <div class="contact-form-card card-modern p-4">
+                    <h3 class="text-dark mb-4">Send us a Message</h3>
+                    
+                    <!-- Loading Spinner (hidden by default) -->
+                    <div id="form-loading" class="text-center d-none">
+                        <div class="spinner-border text-warning" role="status">
+                            <span class="visually-hidden">Sending...</span>
+                        </div>
+                        <p class="text-muted mt-2">Sending your message...</p>
+                    </div>
+                    
+                    <!-- Formspree Form -->
+                    <form id="contact-form" action="https://formspree.io/f/xdkyzqel" method="POST">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <div class="form-floating">
+                                    <input type="text" class="form-control" id="name" name="name" placeholder="Your Name" required>
+                                    <label for="name">Your Name</label>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-floating">
+                                    <input type="email" class="form-control" id="email" name="email" placeholder="name@example.com" required>
+                                    <label for="email">Email Address</label>
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="form-floating">
+                                    <input type="text" class="form-control" id="subject" name="subject" placeholder="Subject" required>
+                                    <label for="subject">Subject</label>
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="form-floating">
+                                    <textarea class="form-control" id="message" name="message" placeholder="Your message" style="height: 150px" required></textarea>
+                                    <label for="message">Your Message</label>
+                                </div>
+                            </div>
+                            <!-- Hidden Fields for Better Organization -->
+                            <input type="hidden" name="_subject" value="New Contact Form Submission - PadolinaKonektado">
+                            <input type="hidden" name="_replyto" id="reply-to">
+                            <input type="hidden" name="_cc" value="info@padolinakonektado.ph">
+                            <input type="text" name="_gotcha" style="display:none">
+                            
+                            <div class="col-12">
+                                <button type="submit" class="btn btn-warning btn-lg send-outline" id="submit-btn">
+                                    <i class="bi bi-send-fill me-2"></i>Send Message
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Emergency Contacts -->
+<section class="emergency-contacts py-5 bg-light">
+    <div class="container">
+        <div class="row text-center mb-5">
+            <div class="col-12">
+                <h2 class="display-5 fw-bold text-dark mb-3">Emergency Contacts</h2>
+                <p class="lead text-muted">For urgent matters and emergencies</p>
+            </div>
+        </div>
+        
+        <div class="row g-4 justify-content-center">
+            <div class="col-md-6 col-lg-4">
+                <div class="emergency-card card-modern p-4 text-center">
+                    <div class="emergency-icon mb-3">
+                        <i class="bi bi-shield-fill display-1 text-danger"></i>
+                    </div>
+                    <h4 class="text-dark mb-3">Police</h4>
+                    <p class="text-muted mb-3">Emergency: 911</p>
+                    <p class="text-muted mb-3">Local Police: (02) 723-0401</p>
+                    <a href="tel:911" class="btn btn-outline-primary btn-sm">Call Now</a>
+                </div>
+            </div>
+            
+            <div class="col-md-6 col-lg-4">
+                <div class="emergency-card card-modern p-4 text-center">
+                    <div class="emergency-icon mb-3">
+                        <i class="bi bi-ambulance display-1 text-warning"></i>
+                    </div>
+                    <h4 class="text-dark mb-3">Medical</h4>
+                    <p class="text-muted mb-3">Emergency: 911</p>
+                    <p class="text-muted mb-3">Local Hospital: (02) 871-2501</p>
+                    <a href="tel:911" class="btn btn-outline-primary btn-sm">Call Now</a>
+                </div>
+            </div>
+            
+            <div class="col-md-6 col-lg-4">
+                <div class="emergency-card card-modern p-4 text-center">
+                    <div class="emergency-icon mb-3">
+                        <i class="bi bi-fire display-1 text-warning"></i>
+                    </div>
+                    <h4 class="text-dark mb-3">Fire Department</h4>
+                    <p class="text-muted mb-3">Emergency: 911</p>
+                    <p class="text-muted mb-3">Fire Station: (02) 842-5962</p>
+                    <a href="tel:911" class="btn btn-outline-primary btn-sm">Call Now</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Success Modal -->
+<div class="modal fade" id="successModal" tabindex="-1" aria-labelledby="successModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header border-0">
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body text-center py-4">
+                <div class="success-icon mb-3">
+                    <i class="bi bi-check-circle-fill display-1 text-success"></i>
+                </div>
+                <h4 class="modal-title text-dark mb-3" id="successModalLabel">Message Sent Successfully!</h4>
+                <p class="text-muted mb-4">
+                    Thank you for contacting us. We have received your message and will get back to you soon.
+                </p>
+                <div class="countdown-timer mb-3">
+                    <small class="text-muted">This modal will close automatically in <span id="countdown">5</span> seconds</small>
+                </div>
+                <button type="button" class="btn btn-warning" data-bs-dismiss="modal">
+                    <i class="bi bi-check-lg me-2"></i>Got it!
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Error Modal -->
+<div class="modal fade" id="errorModal" tabindex="-1" aria-labelledby="errorModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header border-0">
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body text-center py-4">
+                <div class="error-icon mb-3">
+                    <i class="bi bi-exclamation-triangle-fill display-1 text-danger"></i>
+                </div>
+                <h4 class="modal-title text-dark mb-3" id="errorModalLabel">Oops! Something went wrong</h4>
+                <p class="text-muted mb-4">
+                    There was a problem sending your message. Please try again or contact us directly.
+                </p>
+                <button type="button" class="btn btn-warning" data-bs-dismiss="modal">
+                    <i class="bi bi-arrow-clockwise me-2"></i>Try Again
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .contact-main {
+        background: #ffffff;
+        min-height: 100vh;
+    }
+    
+    .contact-hero {
+        background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    }
+    
+    .min-vh-60 {
+        min-height: 60vh;
+    }
+    
+    .card-modern {
+        background-color: #ffffff;
+        border-radius: 15px;
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+        border: none;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        overflow: hidden;
+    }
+    
+    .contact-info-card, .contact-form-card, .emergency-card {
+        transition: all 0.3s ease;
+    }
+    
+    .contact-info-card:hover, .contact-form-card:hover, .emergency-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
+    }
+    
+    .contact-methods, .emergency-contacts {
+        margin: 3rem 0;
+    }
+    
+    .contact-icon {
+        width: 50px;
+        text-align: center;
+        flex-shrink: 0;
+    }
+    
+    .emergency-icon {
+        height: 80px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    .btn-warning {
+        background: linear-gradient(135deg, var(--accent-color) 0%, #ffc107 100%);
+        border: none;
+        color: var(--dark-color);
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
+    
+    .btn-warning:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+    }
+    
+    .btn-outline-primary {
+        border: 2px solid var(--secondary-color);
+        color: var(--secondary-color);
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
+    
+    .btn-outline-primary:hover {
+        background: var(--secondary-color);
+        color: white;
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+    }
+    
+    .form-control {
+        border: 2px solid #e9ecef;
+        border-radius: 10px;
+        transition: all 0.3s ease;
+    }
+    
+    .form-control:focus {
+        border-color: var(--secondary-color);
+        box-shadow: 0 0 0 0.2rem rgba(45, 107, 194, 0.15);
+    }
+
+    /* Modal Styles */
+    .modal-content {
+        border-radius: 15px;
+        border: none;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+    }
+    
+    .success-icon, .error-icon {
+        animation: bounceIn 0.6s ease;
+    }
+
+    .send-outline {
+        border: 2px solid black;
+    }
+
+    .send-outline:hover {
+        border: 2px solid black;
+    }
+    
+    .countdown-timer {
+        background: #f8f9fa;
+        padding: 0.5rem 1rem;
+        border-radius: 25px;
+        display: inline-block;
+    }
+    
+    #countdown {
+        font-weight: bold;
+        color: var(--secondary-color);
+    }
+    
+    @keyframes bounceIn {
+        0% {
+            opacity: 0;
+            transform: scale(0.3);
+        }
+        50% {
+            opacity: 1;
+            transform: scale(1.05);
+        }
+        70% {
+            transform: scale(0.9);
+        }
+        100% {
+            opacity: 1;
+            transform: scale(1);
+        }
+    }
+
+    /* Form States */
+    .form-submitting {
+        opacity: 0.7;
+        pointer-events: none;
+    }
+
+    .spinner-border {
+        width: 3rem;
+        height: 3rem;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+        .contact-hero h1 {
+            font-size: 2.5rem;
+        }
+        
+        .display-4 {
+            font-size: 2.2rem;
+        }
+        
+        .display-5 {
+            font-size: 1.8rem;
+        }
+        
+        .contact-item {
+            flex-direction: column;
+            text-align: center;
+        }
+        
+        .contact-icon {
+            margin-bottom: 1rem;
+            margin-right: 0 !important;
+        }
+        
+        .contact-info-card, .contact-form-card {
+            padding: 2rem !important;
+        }
+        
+        .emergency-card {
+            padding: 2rem !important;
+        }
+        
+        .contact-icon i {
+            font-size: 3rem !important;
+        }
+        
+        .emergency-icon i {
+            font-size: 3.5rem !important;
+        }
+        
+        .modal-dialog {
+            margin: 1rem;
+        }
+    }
+    
+    @media (max-width: 576px) {
+        .contact-hero h1 {
+            font-size: 2rem;
+        }
+        
+        .contact-hero p.lead {
+            font-size: 1rem;
+        }
+        
+        .display-4 {
+            font-size: 1.8rem;
+        }
+        
+        .display-5 {
+            font-size: 1.5rem;
+        }
+        
+        .contact-info-card, .contact-form-card {
+            padding: 1.5rem !important;
+        }
+        
+        .emergency-card {
+            padding: 1.5rem !important;
+        }
+        
+        .btn-lg {
+            padding: 0.75rem 1.5rem;
+            font-size: 1rem;
+            width: 100%;
+        }
+        
+        .form-floating {
+            margin-bottom: 1rem;
+        }
+        
+        .modal-body {
+            padding: 1.5rem !important;
+        }
+    }
+    
+    @media (max-width: 400px) {
+        .contact-hero h1 {
+            font-size: 1.8rem;
+        }
+        
+        .display-4 {
+            font-size: 1.6rem;
+        }
+        
+        .contact-icon i {
+            font-size: 2.5rem !important;
+        }
+        
+        .emergency-icon i {
+            font-size: 3rem !important;
+        }
+        
+        .contact-item h5 {
+            font-size: 1.1rem;
+        }
+    }
+
+    /* Form responsiveness */
+    @media (max-width: 768px) {
+        .contact-form-card .row.g-3 > [class*="col-"] {
+            margin-bottom: 1rem;
+        }
+    }
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const contactForm = document.getElementById('contact-form');
+    const formLoading = document.getElementById('form-loading');
+    const submitBtn = document.getElementById('submit-btn');
+    const emailField = document.getElementById('email');
+    const successModal = new bootstrap.Modal(document.getElementById('successModal'));
+    const errorModal = new bootstrap.Modal(document.getElementById('errorModal'));
+    
+    let countdownTimer;
+
+    // Set reply-to field to match email input
+    emailField.addEventListener('input', function() {
+        document.getElementById('reply-to').value = this.value;
+    });
+
+    // Function to start countdown
+    function startCountdown(seconds) {
+        const countdownElement = document.getElementById('countdown');
+        let timeLeft = seconds;
+        
+        countdownElement.textContent = timeLeft;
+        
+        countdownTimer = setInterval(function() {
+            timeLeft--;
+            countdownElement.textContent = timeLeft;
+            
+            if (timeLeft <= 0) {
+                clearInterval(countdownTimer);
+                successModal.hide();
+            }
+        }, 1000);
+    }
+
+    // Function to stop countdown
+    function stopCountdown() {
+        if (countdownTimer) {
+            clearInterval(countdownTimer);
+        }
+    }
+
+    contactForm.addEventListener('submit', async function(e) {
+        e.preventDefault();
+        
+        // Show loading state
+        formLoading.classList.remove('d-none');
+        contactForm.classList.add('form-submitting');
+        submitBtn.disabled = true;
+        
+        try {
+            const formData = new FormData(contactForm);
+            const response = await fetch(contactForm.action, {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'Accept': 'application/json'
+                }
+            });
+            
+            if (response.ok) {
+                // Success - show modal and start countdown
+                contactForm.reset();
+                formLoading.classList.add('d-none');
+                contactForm.classList.remove('form-submitting');
+                submitBtn.disabled = false;
+                
+                successModal.show();
+                startCountdown(5); // 5 seconds countdown
+                
+            } else {
+                // Error
+                throw new Error('Form submission failed');
+            }
+        } catch (error) {
+            // Error handling
+            formLoading.classList.add('d-none');
+            contactForm.classList.remove('form-submitting');
+            submitBtn.disabled = false;
+            
+            errorModal.show();
+            console.error('Form submission error:', error);
+        }
+    });
+
+    // Stop countdown when modal is manually closed
+    document.getElementById('successModal').addEventListener('hide.bs.modal', function() {
+        stopCountdown();
+    });
+
+    // Optional: Add form validation feedback
+    const formInputs = contactForm.querySelectorAll('input, textarea');
+    formInputs.forEach(input => {
+        input.addEventListener('invalid', function() {
+            this.classList.add('is-invalid');
+        });
+        
+        input.addEventListener('input', function() {
+            if (this.checkValidity()) {
+                this.classList.remove('is-invalid');
+                this.classList.add('is-valid');
+            } else {
+                this.classList.remove('is-valid');
+            }
+        });
+    });
+
+    // Reset form validation styles when modals are closed
+    document.getElementById('successModal').addEventListener('hidden.bs.modal', function() {
+        formInputs.forEach(input => {
+            input.classList.remove('is-valid');
+        });
+    });
+
+    document.getElementById('errorModal').addEventListener('hidden.bs.modal', function() {
+        formInputs.forEach(input => {
+            input.classList.remove('is-invalid');
+        });
+    });
+});
+</script>
+{% endblock %}

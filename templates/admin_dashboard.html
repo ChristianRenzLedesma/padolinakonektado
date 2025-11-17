@@ -106,7 +106,7 @@
                         <p class="text-muted small mb-1">{{ concern.description[:80] }}...</p>
                         <small class="text-muted">
                             <i class="bi bi-person"></i> {{ concern.first_name }} {{ concern.last_name }} | 
-                            <i class="bi bi-calendar"></i> {{ concern.created_at.strftime('%b %d, %Y') }}
+                            <i class="bi bi-calendar"></i> {{ concern.created_at|format_datetime('%b %d, %Y') }}
                         </small>
                     </div>
                     {% endfor %}
@@ -165,28 +165,28 @@
             <div class="card-body">
                 <div class="row text-center">
                     <div class="col-md-3 mb-3">
-                        <button class="btn btn-outline-primary btn-lg w-100 h-100 py-3">
+                        <a href="{{ url_for('announcements') }}" class="btn btn-outline-primary btn-lg w-100 h-100 py-3 d-flex flex-column align-items-center justify-content-center text-decoration-none">
                             <i class="bi bi-plus-circle fs-1 d-block mb-2"></i>
                             Create Announcement
-                        </button>
+                        </a>
                     </div>
                     <div class="col-md-3 mb-3">
-                        <button class="btn btn-outline-success btn-lg w-100 h-100 py-3">
+                        <a href="{{ url_for('user_management') }}" class="btn btn-outline-success btn-lg w-100 h-100 py-3 d-flex flex-column align-items-center justify-content-center text-decoration-none">
                             <i class="bi bi-person-plus fs-1 d-block mb-2"></i>
                             Manage Users
-                        </button>
+                        </a>
                     </div>
                     <div class="col-md-3 mb-3">
-                        <button class="btn btn-outline-warning btn-lg w-100 h-100 py-3">
+                        <a href="{{ url_for('all_concerns') }}" class="btn btn-outline-warning btn-lg w-100 h-100 py-3 d-flex flex-column align-items-center justify-content-center text-decoration-none">
                             <i class="bi bi-chat-dots fs-1 d-block mb-2"></i>
                             Handle Concerns
-                        </button>
+                        </a>
                     </div>
                     <div class="col-md-3 mb-3">
-                        <button class="btn btn-outline-danger btn-lg w-100 h-100 py-3">
+                        <a href="{{ url_for('reports') }}" class="btn btn-outline-danger btn-lg w-100 h-100 py-3 d-flex flex-column align-items-center justify-content-center text-decoration-none">
                             <i class="bi bi-graph-up fs-1 d-block mb-2"></i>
                             View Reports
-                        </button>
+                        </a>
                     </div>
                 </div>
             </div>

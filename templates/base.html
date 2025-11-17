@@ -11,28 +11,896 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
     <!-- Custom CSS -->
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <style>
+        :root {
+            --sidebar-width: 280px;
+            --sidebar-collapsed-width: 70px;
+            --top-navbar-height: 56px;
+            --transition-speed: 0.3s;
+            --sidebar-bg: #1a365d;
+            --sidebar-hover: #2d6bc2;
+            --sidebar-active: var(--accent-color);
+            --sidebar-text: #e2e8f0;
+            --sidebar-text-muted: #a0aec0;
+            
+            /* Accent color variables - default to primary */
+            --accent-color: #007bff;
+            --accent-hover: #0056b3;
+            --accent-light: rgba(0, 123, 255, 0.1);
+            --accent-gradient: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
+        }
+
+        body {
+            min-height: 100vh;
+            background-color: #f8f9fa;
+        }
+
+        /* Desktop Sidebar Styles */
+        .desktop-sidebar {
+            position: fixed;
+            top: var(--top-navbar-height);
+            left: 0;
+            width: var(--sidebar-width);
+            height: calc(100vh - var(--top-navbar-height));
+            background: var(--sidebar-bg);
+            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.2);
+            transition: all var(--transition-speed) ease;
+            z-index: 1000;
+            overflow-y: auto;
+            overflow-x: hidden;
+        }
+
+        .desktop-sidebar.collapsed {
+            width: var(--sidebar-collapsed-width);
+        }
+
+        .sidebar-content {
+            padding: 1rem;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .desktop-sidebar.collapsed .sidebar-content {
+            padding: 1rem 0.5rem;
+        }
+
+        /* Sidebar Header with Brand */
+        .sidebar-header {
+            text-align: center;
+            padding: 0.5rem 0;
+            border-bottom: 1px solid #2d3748;
+            margin-bottom: 1rem;
+        }
+
+        .desktop-sidebar.collapsed .sidebar-header {
+            padding: 0.5rem 0;
+        }
+
+        .desktop-sidebar.collapsed .sidebar-header .brand-text {
+            display: none;
+        }
+
+        .brand-icon {
+            font-size: 1.5rem;
+            color: var(--sidebar-active);
+        }
+
+        .brand-text {
+            font-weight: 700;
+            color: var(--sidebar-text);
+            font-size: 1.1rem;
+            margin-top: 0.5rem;
+        }
+
+        /* User Profile Section */
+        .user-profile-section {
+            text-align: center;
+            padding: 1rem 0;
+            border-bottom: 1px solid #2d3748;
+            margin-bottom: 1rem;
+        }
+
+        .desktop-sidebar.collapsed .user-profile-section {
+            padding: 0.5rem 0;
+        }
+
+        .desktop-sidebar.collapsed .user-profile-section>*:not(.position-relative) {
+            display: none;
+        }
+
+        .admin-badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: var(--sidebar-active);
+            color: #000;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.7rem;
+        }
+
+        .user-name {
+            font-weight: 600;
+            margin: 0.5rem 0 0.25rem 0;
+            color: var(--sidebar-text);
+        }
+
+        .user-badge {
+            font-size: 0.75rem;
+            padding: 0.25rem 0.75rem;
+            border-radius: 15px;
+            font-weight: 500;
+        }
+
+        .user-admin {
+            background: rgba(230, 164, 0, 0.2);
+            color: var(--sidebar-active);
+            border: 1px solid rgba(230, 164, 0, 0.3);
+        }
+
+        .user-resident {
+            background: rgba(45, 107, 194, 0.2);
+            color: #63b3ed;
+            border: 1px solid rgba(45, 107, 194, 0.3);
+        }
+
+        .user-location {
+            font-size: 0.8rem;
+            color: var(--sidebar-text-muted);
+            margin: 0;
+        }
+
+        /* Sidebar Navigation */
+        .sidebar-navigation {
+            flex: 1;
+        }
+
+        .sidebar-link {
+            position: relative;
+            display: flex;
+            align-items: center;
+            padding: 0.75rem 1rem;
+            color: var(--sidebar-text-muted);
+            text-decoration: none;
+            border-radius: 8px;
+            margin-bottom: 0.25rem;
+            transition: all 0.2s ease;
+        }
+
+        .desktop-sidebar.collapsed .sidebar-link {
+            padding: 0.75rem;
+            justify-content: center;
+        }
+
+        .sidebar-link:hover {
+            background-color: var(--sidebar-hover);
+            color: white;
+        }
+
+        .sidebar-link.active {
+            background-color: var(--sidebar-active);
+            color: #1a202c;
+            font-weight: 500;
+        }
+
+        .sidebar-link i {
+            font-size: 1.1rem;
+            width: 24px;
+            margin-right: 0.75rem;
+        }
+
+        .desktop-sidebar.collapsed .sidebar-link i {
+            margin-right: 0;
+        }
+
+        .sidebar-link span {
+            flex: 1;
+        }
+
+        .desktop-sidebar.collapsed .sidebar-link span {
+            display: none;
+        }
+
+        .notification-badge {
+            background: #e53e3e;
+            color: white;
+            border-radius: 10px;
+            padding: 0.1rem 0.4rem;
+            font-size: 0.7rem;
+            font-weight: 600;
+            min-width: 18px;
+            height: 18px;
+            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: absolute;
+            right: 12px;
+            top: 8px;
+            line-height: 1;
+        }
+
+        .notification-badge:empty {
+            display: none !important;
+        }
+
+        /* Collapsed sidebar */
+        .desktop-sidebar.collapsed .notification-badge {
+            right: 5px;
+            top: 5px;
+            font-size: 0.6rem;
+            padding: 0.1rem 0.3rem;
+            min-width: 16px;
+            height: 16px;
+        }
+
+        /* Mobile sidebar */
+        .mobile-sidebar .notification-badge {
+            right: 12px;
+            top: 8px;
+        }
+
+        .desktop-sidebar.collapsed .notification-badge {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            font-size: 0.6rem;
+            padding: 0.1rem 0.3rem;
+        }
+
+        .section-header {
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--sidebar-text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin: 1rem 0 0.5rem 0;
+            padding: 0 1rem;
+        }
+
+        .desktop-sidebar.collapsed .section-header {
+            display: none;
+        }
+
+        /* Sidebar Stats */
+        .sidebar-stats {
+            padding: 1rem 0;
+            border-top: 1px solid #2d3748;
+            margin-top: 1rem;
+        }
+
+        .desktop-sidebar.collapsed .sidebar-stats {
+            display: none;
+        }
+
+        .sidebar-stats h6 {
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--sidebar-text-muted);
+            margin-bottom: 0.75rem;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.5rem;
+        }
+
+        .stat-item {
+            text-align: center;
+            padding: 0.5rem;
+            border-radius: 6px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .stat-item i {
+            font-size: 0.9rem;
+            margin-bottom: 0.25rem;
+            color: var(--sidebar-text);
+        }
+
+        .stat-number {
+            display: block;
+            font-weight: 600;
+            font-size: 0.9rem;
+            color: var(--sidebar-text);
+        }
+
+        .stat-label {
+            font-size: 0.7rem;
+            color: var(--sidebar-text-muted);
+        }
+
+        /* Emergency Contacts */
+        .emergency-contacts {
+            padding: 1rem 0;
+            border-top: 1px solid #2d3748;
+        }
+
+        .desktop-sidebar.collapsed .emergency-contacts {
+            display: none;
+        }
+
+        .emergency-contacts h6 {
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--sidebar-text-muted);
+            margin-bottom: 0.75rem;
+        }
+
+        .emergency-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .emergency-btn {
+            font-size: 0.8rem;
+            padding: 0.5rem;
+            border-radius: 6px;
+            text-align: left;
+            border: none;
+            transition: all 0.2s ease;
+        }
+
+        .emergency-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .emergency-btn.police {
+            background: #e53e3e;
+            color: white;
+        }
+
+        .emergency-btn.medical {
+            background: #3182ce;
+            color: white;
+        }
+
+        .emergency-btn.fire {
+            background: #dd6b20;
+            color: white;
+        }
+
+        /* Sidebar Footer */
+        .sidebar-footer {
+            padding: 1rem 0 0 0;
+            border-top: 1px solid #2d3748;
+            text-align: center;
+        }
+
+        .desktop-sidebar.collapsed .sidebar-footer {
+            display: none;
+        }
+
+        .sidebar-footer small {
+            display: block;
+            color: var(--sidebar-text-muted);
+            font-size: 0.7rem;
+        }
+
+        /* Main Content Area */
+        .main-content {
+            margin-left: var(--sidebar-width);
+            min-height: calc(100vh - var(--top-navbar-height));
+            transition: margin-left var(--transition-speed) ease;
+        }
+
+        .main-content.expanded {
+            margin-left: var(--sidebar-collapsed-width);
+        }
+
+        .content-wrapper {
+            padding: 2rem;
+            min-height: calc(100vh - var(--top-navbar-height) - 60px);
+        }
+
+        /* Flash Messages */
+        .flash-messages {
+            position: fixed;
+            top: var(--top-navbar-height);
+            right: 1rem;
+            z-index: 1050;
+            max-width: 400px;
+        }
+
+        /* Footer */
+        .main-footer {
+            border-top: 1px solid #e9ecef;
+            padding: 1rem 0;
+            margin-left: var(--sidebar-width);
+            transition: margin-left var(--transition-speed) ease;
+        }
+
+        .main-footer.expanded {
+            margin-left: var(--sidebar-collapsed-width);
+        }
+
+
+        /* Toggle Button */
+        .sidebar-toggle {
+            position: fixed;
+            bottom: 53rem;
+            left: calc(var(--sidebar-width) - 20px);
+            z-index: 1001;
+            background: var(--sidebar-active);
+            border: 2px solid var(--sidebar-active);
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all var(--transition-speed) ease;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+            color: #1a202c;
+        }
+
+        .sidebar-toggle:hover {
+            background: #ffc107;
+            transform: scale(1.05);
+        }
+
+        .desktop-sidebar.collapsed+.sidebar-toggle {
+            left: calc(var(--sidebar-collapsed-width) - 20px);
+        }
+
+        /* Mobile Sidebar */
+        .mobile-sidebar {
+            width: 280px;
+            background: var(--sidebar-bg);
+            color: var(--sidebar-text);
+        }
+
+        .mobile-sidebar .offcanvas-header {
+            background: #f8f9fa;
+            border-bottom: 1px solid #dee2e6;
+        }
+
+        .mobile-sidebar .offcanvas-body {
+            background: var(--sidebar-bg);
+            padding: 0;
+        }
+
+        .mobile-sidebar .sidebar-content {
+            padding: 0;
+        }
+
+        @media (max-width: 768px) {
+            .desktop-sidebar {
+                display: none;
+            }
+
+            .main-content {
+                margin-left: 0 !important;
+            }
+
+            .main-footer {
+                margin-left: 0 !important;
+            }
+
+            .sidebar-toggle {
+                display: none;
+            }
+        }
+
+        /* Scrollbar Styling for Sidebar */
+        .desktop-sidebar::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .desktop-sidebar::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .desktop-sidebar::-webkit-scrollbar-thumb {
+            background: var(--sidebar-text-muted);
+            border-radius: 3px;
+        }
+
+        .desktop-sidebar::-webkit-scrollbar-thumb:hover {
+            background: var(--sidebar-text);
+        }
+
+        /* Active link indicator for better visibility */
+        .sidebar-link.active::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 4px;
+            height: 60%;
+            background-color: #1a202c;
+            border-radius: 0 4px 4px 0;
+        }
+        
+        /* Accent Color Classes */
+        .accent-primary {
+            --accent-color: #007bff;
+            --accent-hover: #0056b3;
+            --accent-light: rgba(0, 123, 255, 0.1);
+            --accent-gradient: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
+        }
+        
+        .accent-success {
+            --accent-color: #28a745;
+            --accent-hover: #1e7e34;
+            --accent-light: rgba(40, 167, 69, 0.1);
+            --accent-gradient: linear-gradient(135deg, #28a745 0%, #1e7e34 100%);
+        }
+        
+        .accent-info {
+            --accent-color: #17a2b8;
+            --accent-hover: #117a8b;
+            --accent-light: rgba(23, 162, 184, 0.1);
+            --accent-gradient: linear-gradient(135deg, #17a2b8 0%, #117a8b 100%);
+        }
+        
+        .accent-warning {
+            --accent-color: #ffc107;
+            --accent-hover: #e0a800;
+            --accent-light: rgba(255, 193, 7, 0.1);
+            --accent-gradient: linear-gradient(135deg, #ffc107 0%, #e0a800 100%);
+        }
+        
+        .accent-danger {
+            --accent-color: #dc3545;
+            --accent-hover: #c82333;
+            --accent-light: rgba(220, 53, 69, 0.1);
+            --accent-gradient: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+        }
+        
+        .accent-default {
+            --accent-color: #6c757d;
+            --accent-hover: #5a6268;
+            --accent-light: rgba(248, 249, 250, 0.5);
+            --accent-gradient: linear-gradient(135deg, #6c757d 0%, #5a6268 100%);
+        }
+        
+        /* Apply accent colors to common elements */
+        .btn-primary {
+            background: var(--accent-gradient) !important;
+            border-color: var(--accent-color) !important;
+        }
+        
+        .btn-primary:hover {
+            background: var(--accent-hover) !important;
+            border-color: var(--accent-hover) !important;
+        }
+        
+        .text-primary {
+            color: var(--accent-color) !important;
+        }
+        
+        .bg-primary {
+            background-color: var(--accent-color) !important;
+        }
+        
+        .alert-primary {
+            background-color: var(--accent-light) !important;
+            border-color: var(--accent-color) !important;
+            color: var(--accent-hover) !important;
+        }
+        
+        .sidebar-link.active,
+        .sidebar-link:hover {
+            background-color: var(--accent-color) !important;
+        }
+        
+        .card-header {
+            background: var(--accent-gradient) !important;
+        }
+        
+        /* Font size classes */
+        .font-small { font-size: 14px; }
+        .font-medium { font-size: 16px; }
+        .font-large { font-size: 18px; }
+        .font-extra-large { font-size: 20px; }
+        
+        /* Dark mode styles */
+        .dark-mode {
+            background-color: #1a202c !important;
+            color: #1a202c !important;
+        }
+        
+        /* Only change navbar and sidebar backgrounds */
+        .dark-mode .navbar {
+            background-color: #2d3748 !important;
+            border-color: #4a5568 !important;
+        }
+        
+        .dark-mode .sidebar {
+            background-color: #2d3748 !important;
+        }
+        
+        /* Keep cards in original light mode */
+        .dark-mode .card {
+            background-color: #ffffff !important;
+            color: #1a202c !important;
+            border-color: #dee2e6 !important;
+        }
+        
+        .dark-mode .card-header {
+            background-color: #f8f9fa !important;
+            color: #1a202c !important;
+            border-color: #dee2e6 !important;
+        }
+        
+        /* Table styling - keep light mode */
+        .dark-mode .table {
+            color: #1a202c !important;
+        }
+        
+        .dark-mode .table-light {
+            background-color: #f8f9fa !important;
+            color: #1a202c !important;
+        }
+        
+        .dark-mode .table-striped > tbody > tr:nth-of-type(odd) > td {
+            background-color: rgba(0,0,0,.05) !important;
+        }
+        
+        /* Text colors - keep original for cards */
+        .dark-mode .text-muted {
+            color: #6c757d !important;
+        }
+        
+        .dark-mode .text-primary {
+            color: #0d6efd !important;
+        }
+        
+        .dark-mode .text-success {
+            color: #198754 !important;
+        }
+        
+        .dark-mode .text-info {
+            color: #0dcaf0 !important;
+        }
+        
+        .dark-mode .text-warning {
+            color: #ffc107 !important;
+        }
+        
+        .dark-mode .text-danger {
+            color: #dc3545 !important;
+        }
+        
+        /* Dropdown - keep light mode */
+        .dark-mode .dropdown-menu {
+            background-color: #ffffff !important;
+            border-color: #dee2e6 !important;
+        }
+        
+        .dark-mode .dropdown-item {
+            color: #1a202c !important;
+        }
+        
+        .dark-mode .dropdown-item:hover {
+            background-color: #f8f9fa !important;
+            color: #1a202c !important;
+        }
+        
+        .dark-mode .dropdown-divider {
+            border-color: #dee2e6 !important;
+        }
+        
+        /* Forms - keep light mode */
+        .dark-mode .form-control {
+            background-color: #ffffff !important;
+            border-color: #ced4da !important;
+            color: #1a202c !important;
+        }
+        
+        .dark-mode .form-control:focus {
+            background-color: #ffffff !important;
+            border-color: #86b7fe !important;
+            color: #1a202c !important;
+        }
+        
+        .dark-mode .form-label {
+            color: #1a202c !important;
+        }
+        
+        .dark-mode .form-check-input {
+            background-color: #ffffff !important;
+            border-color: #ced4da !important;
+        }
+        
+        .dark-mode .form-check-label {
+            color: #1a202c !important;
+        }
+        
+        /* Buttons - keep light mode */
+        .dark-mode .btn-light {
+            background-color: #f8f9fa !important;
+            border-color: #f8f9fa !important;
+            color: #1a202c !important;
+        }
+        
+        .dark-mode .btn-light:hover {
+            background-color: #d3d4d6 !important;
+            color: #1a202c !important;
+        }
+        
+        /* Modal - keep light mode */
+        .dark-mode .modal-content {
+            background-color: #ffffff !important;
+            color: #1a202c !important;
+        }
+        
+        .dark-mode .modal-header {
+            background-color: #ffffff !important;
+            border-color: #dee2e6 !important;
+        }
+        
+        .dark-mode .modal-footer {
+            background-color: #ffffff !important;
+            border-color: #dee2e6 !important;
+        }
+        
+        /* Offcanvas - keep light mode */
+        .dark-mode .offcanvas {
+            background-color: #ffffff !important;
+            color: #1a202c !important;
+        }
+        
+        .dark-mode .offcanvas-header {
+            background-color: #ffffff !important;
+            border-color: #dee2e6 !important;
+        }
+        
+        /* Navigation links in sidebar - adjust for dark sidebar */
+        .dark-mode .sidebar .nav-link {
+            color: #e2e8f0 !important;
+        }
+        
+        .dark-mode .sidebar .nav-link:hover {
+            background-color: #4a5568 !important;
+            color: #e2e8f0 !important;
+        }
+        
+        .dark-mode .sidebar .nav-link.active {
+            background-color: var(--accent-color) !important;
+            color: #ffffff !important;
+        }
+        
+        /* Main navbar links */
+        .dark-mode .navbar .nav-link {
+            color: #e2e8f0 !important;
+        }
+        
+        .dark-mode .navbar .nav-link:hover {
+            color: #cbd5e0 !important;
+        }
+        
+        .dark-mode .navbar .dropdown-menu {
+            background-color: #2d3748 !important;
+        }
+        
+        .dark-mode .navbar .dropdown-item {
+            color: #e2e8f0 !important;
+        }
+        
+        .dark-mode .navbar .dropdown-item:hover {
+            background-color: #4a5568 !important;
+            color: #e2e8f0 !important;
+        }
+        
+        /* Keep headings in cards dark */
+        .dark-mode h1, .dark-mode h2, .dark-mode h3, .dark-mode h4, .dark-mode h5, .dark-mode h6 {
+            color: #1a202c !important;
+        }
+        
+        .dark-mode .card h1, .dark-mode .card h2, .dark-mode .card h3, .dark-mode .card h4, .dark-mode .card h5, .dark-mode .card h6 {
+            color: #1a202c !important;
+        }
+        
+        .dark-mode .badge {
+            color: #1a202c !important;
+        }
+        
+        .dark-mode .alert {
+            color: #1a202c !important;
+        }
+        
+        /* Ensure card content stays in light mode */
+        .dark-mode .card * {
+            color: inherit !important;
+        }
+        
+        .dark-mode .card, .dark-mode .card *, .dark-mode .card *::before, .dark-mode .card *::after {
+            color: inherit !important;
+        }
+        
+        .dark-mode .card p, .dark-mode .card span, .dark-mode .card div, .dark-mode .card td, .dark-mode .card th,
+        .dark-mode .card li, .dark-mode .card a:not(.btn):not(.dropdown-item), .dark-mode .card h1, .dark-mode .card h2, .dark-mode .card h3, .dark-mode .card h4, .dark-mode .card h5, .dark-mode .card h6 {
+            color: #1a202c !important;
+        }
+        
+        .dark-mode .card .text-muted, .dark-mode .card .small, .dark-mode .card .text-secondary {
+            color: #6c757d !important;
+        }
+        
+        .dark-mode .card a:not(.btn):not(.dropdown-item) {
+            color: #0d6efd !important;
+        }
+        
+        .dark-mode .card a:not(.btn):not(.dropdown-item):hover {
+            color: #0a58ca !important;
+        }
+        
+        .dark-mode .card .dropdown-menu {
+            background-color: #ffffff !important;
+        }
+        
+        .dark-mode .card .dropdown-item {
+            color: #1a202c !important;
+        }
+        
+        .dark-mode .card .dropdown-item:hover {
+            color: #1a202c !important;
+        }
+        
+        .dark-mode .card .card-text, .dark-mode .card .card-title {
+            color: #1a202c !important;
+        }
+        
+        .dark-mode .card .table td, .dark-mode .card .table th {
+            color: #1a202c !important;
+        }
+        
+        .dark-mode .card .form-text {
+            color: #6c757d !important;
+        }
+        
+        .dark-mode .card .placeholder {
+            color: #6c757d !important;
+        }
+        
+        .dark-mode .btn-close {
+            filter: invert(0);
+        }
+        
+        .dark-mode .card .btn-close {
+            filter: invert(0);
+        }
+    </style>
 </head>
 
 <body class="bg-light">
     <!-- Navigation -->
-    <nav class="navbar navbar-expand-lg navbar-dark bg-primary fixed-top">
+    <nav class="navbar navbar-expand-lg navbar-light bg-light fixed-top">
         <div class="container-fluid">
-            <!-- Hamburger Menu for Mobile -->
-            <button class="navbar-toggler me-2" type="button" data-bs-toggle="offcanvas" data-bs-target="#mobileSidebar">
+            <!-- Hamburger Menu for Mobile - PRESERVED -->
+            <button class="navbar-toggler me-2" type="button" data-bs-toggle="offcanvas"
+                data-bs-target="#mobileSidebar">
                 <span class="navbar-toggler-icon"></span>
             </button>
-            
-            <!-- Brand -->
+
+            <!-- Brand - Simplified -->
             <a class="navbar-brand fw-bold" href="{{ url_for('dashboard') }}">
-                <i class="bi bi-house-heart"></i> PadolinaKonektado
+                <i class="bi bi-house-heart"></i>
             </a>
+
+            <!-- Desktop Sidebar Toggle - Removed from header -->
 
             <!-- User Menu -->
             <div class="navbar-nav ms-auto">
                 {% if session.user_id %}
                 <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
-                        <i class="bi bi-person-circle"></i> {{ session.first_name }}
+                    <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" role="button" data-bs-toggle="dropdown">
+                        <img src="{{ get_profile_picture_url(session.profile_picture) }}" 
+                             class="rounded-circle me-2" alt="Profile Picture" style="width: 32px; height: 32px; object-fit: cover;">
+                        {{ session.first_name }}
                     </a>
                     <ul class="dropdown-menu dropdown-menu-end">
                         <li><span class="dropdown-item-text small"><i class="bi bi-person-badge"></i> {{
@@ -62,14 +930,20 @@
         </div>
     </nav>
 
-    <!-- Desktop Sidebar (Always visible on desktop) -->
+    <!-- Desktop Sidebar -->
     {% if session.user_id %}
-    <div class="desktop-sidebar">
+    <div class="desktop-sidebar" id="desktopSidebar">
         <div class="sidebar-content">
+            <!-- Sidebar Header with Brand -->
+            <div class="sidebar-header">
+                <div class="brand-text">PadolinaKonektado</div>
+            </div>
+
             <!-- User Profile Section -->
             <div class="user-profile-section">
                 <div class="position-relative d-inline-block">
-                    <i class="bi bi-person-circle fs-1 text-primary"></i>
+                    <img src="{{ get_profile_picture_url(session.profile_picture) }}" 
+                         class="rounded-circle" alt="Profile Picture" style="width: 60px; height: 60px; object-fit: cover;">
                     {% if session.user_type == 'admin' %}
                     <span class="admin-badge">
                         <i class="bi bi-star-fill"></i>
@@ -88,8 +962,8 @@
                 <ul class="nav nav-pills flex-column">
                     <!-- Dashboard -->
                     <li class="nav-item">
-                        <a class="nav-link sidebar-link {% if request.endpoint == 'dashboard' %}active{% endif %}" 
-                           href="{{ url_for('dashboard') }}">
+                        <a class="nav-link sidebar-link {% if request.endpoint == 'dashboard' %}active{% endif %}"
+                            href="{{ url_for('dashboard') }}">
                             <i class="bi bi-speedometer2"></i>
                             <span>Dashboard</span>
                         </a>
@@ -97,31 +971,39 @@
 
                     <!-- Announcements -->
                     <li class="nav-item">
-                        <a class="nav-link sidebar-link {% if request.endpoint == 'announcements' %}active{% endif %}" 
-                           href="{{ url_for('announcements') }}">
+                        <a class="nav-link sidebar-link {% if request.endpoint == 'announcements' %}active{% endif %}"
+                            href="{{ url_for('announcements') }}">
                             <i class="bi bi-megaphone"></i>
                             <span>Announcements</span>
-                            <p class="notification-badge">3</p>
+                            <!-- Dynamic notification badge -->
+                            <span class="notification-badge">
+                                {% if announcement_count and announcement_count > 0 %}
+                                {{ announcement_count }}
+                                {% endif %}
+                            </span>
                         </a>
                     </li>
 
                     <!-- For Residents -->
                     {% if session.user_type != 'admin' %}
                     <li class="nav-item">
-                        <a class="nav-link sidebar-link" href="#">
+                        <a class="nav-link sidebar-link {% if request.endpoint == 'report_concern' %}active{% endif %}"
+                            href="{{ url_for('report_concern') }}">
                             <i class="bi bi-chat-dots"></i>
                             <span>Report Concern</span>
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link sidebar-link" href="#">
+                        <a class="nav-link sidebar-link {% if request.endpoint == 'events' %}active{% endif %}"
+                            href="{{ url_for('events') }}">
                             <i class="bi bi-calendar-event"></i>
                             <span>Events</span>
-                            <p class="notification-badge">2</p>
+                            <span class="notification-badge">2</span>
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link sidebar-link" href="#">
+                        <a class="nav-link sidebar-link {% if request.endpoint == 'community_forum' %}active{% endif %}"
+                            href="{{ url_for('community_forum') }}">
                             <i class="bi bi-people"></i>
                             <span>Community Forum</span>
                         </a>
@@ -134,20 +1016,23 @@
                         <span>Admin Tools</span>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link sidebar-link" href="#">
+                        <a class="nav-link sidebar-link {% if request.endpoint == 'user_management' %}active{% endif %}"
+                            href="{{ url_for('user_management') }}">
                             <i class="bi bi-people"></i>
                             <span>User Management</span>
-                            <span class="notification-badge">45</span>
+                            <span class="notification-badge"></span>
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link sidebar-link" href="#">
+                        <a class="nav-link sidebar-link {% if request.endpoint == 'reports' %}active{% endif %}"
+                            href="{{ url_for('reports') }}">
                             <i class="bi bi-clipboard-data"></i>
                             <span>Reports</span>
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link sidebar-link" href="#">
+                        <a class="nav-link sidebar-link {% if request.endpoint == 'system_settings' %}active{% endif %}"
+                            href="{{ url_for('system_settings') }}">
                             <i class="bi bi-gear"></i>
                             <span>System Settings</span>
                         </a>
@@ -159,19 +1044,22 @@
                         <span>Community</span>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link sidebar-link" href="#">
+                        <a class="nav-link sidebar-link {% if request.endpoint == 'news' %}active{% endif %}"
+                            href="{{ url_for('news') }}">
                             <i class="bi bi-newspaper"></i>
                             <span>News & Updates</span>
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link sidebar-link" href="#">
+                        <a class="nav-link sidebar-link {% if request.endpoint == 'event_calendar' %}active{% endif %}"
+                            href="{{ url_for('event_calendar') }}">
                             <i class="bi bi-calendar-check"></i>
                             <span>Event Calendar</span>
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link sidebar-link" href="#">
+                        <a class="nav-link sidebar-link {% if request.endpoint == 'directory' %}active{% endif %}"
+                            href="{{ url_for('directory') }}">
                             <i class="bi bi-telephone"></i>
                             <span>Directory</span>
                         </a>
@@ -185,22 +1073,22 @@
                 <div class="stats-grid">
                     <div class="stat-item residents">
                         <i class="bi bi-people"></i>
-                        <span class="stat-number">1,245</span>
+                        <span class="stat-number">{{ total_residents }}</span>
                         <span class="stat-label">Residents</span>
                     </div>
                     <div class="stat-item concerns">
                         <i class="bi bi-chat-dots"></i>
-                        <span class="stat-number">23</span>
+                        <span class="stat-number">{{ total_concerns }}</span>
                         <span class="stat-label">Concerns</span>
                     </div>
                     <div class="stat-item events">
                         <i class="bi bi-calendar-event"></i>
-                        <span class="stat-number">5</span>
+                        <span class="stat-number">{{ total_events }}</span>
                         <span class="stat-label">Events</span>
                     </div>
                     <div class="stat-item announcements">
                         <i class="bi bi-megaphone"></i>
-                        <span class="stat-number">12</span>
+                        <span class="stat-number">{{ total_announcements }}</span>
                         <span class="stat-label">Announce</span>
                     </div>
                 </div>
@@ -229,9 +1117,14 @@
             </div>
         </div>
     </div>
+
+    <!-- Sidebar Toggle Button -->
+    <div class="sidebar-toggle" id="sidebarToggle">
+        <i class="bi bi-chevron-left"></i>
+    </div>
     {% endif %}
 
-    <!-- Mobile Sidebar (Offcanvas) -->
+    <!-- Mobile Sidebar (Offcanvas) - SAME CONTENT AS DESKTOP SIDEBAR -->
     {% if session.user_id %}
     <div class="offcanvas offcanvas-start mobile-sidebar" tabindex="-1" id="mobileSidebar">
         <div class="offcanvas-header bg-primary text-white">
@@ -242,173 +1135,185 @@
             <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas"></button>
         </div>
         <div class="offcanvas-body p-0">
-            <!-- User Profile Section -->
-            <div class="user-profile-section">
-                <div class="position-relative d-inline-block">
-                    <i class="bi bi-person-circle fs-1 text-primary"></i>
-                    {% if session.user_type == 'admin' %}
-                    <span class="admin-badge">
-                        <i class="bi bi-star-fill"></i>
+            <div class="sidebar-content">
+                <!-- User Profile Section -->
+                <div class="user-profile-section">
+                    <div class="position-relative d-inline-block">
+                        <img src="{{ get_profile_picture_url(session.profile_picture) }}" 
+                             class="rounded-circle" alt="Profile Picture" style="width: 60px; height: 60px; object-fit: cover;">
+                        {% if session.user_type == 'admin' %}
+                        <span class="admin-badge">
+                            <i class="bi bi-star-fill"></i>
+                        </span>
+                        {% endif %}
+                    </div>
+                    <h6 class="user-name">{{ session.first_name }} {{ session.last_name }}</h6>
+                    <span class="user-badge user-{{ session.user_type }}">
+                        {{ session.user_type|title }}
                     </span>
-                    {% endif %}
+                    <p class="user-location">Barangay Padolina Resident</p>
                 </div>
-                <h6 class="user-name">{{ session.first_name }} {{ session.last_name }}</h6>
-                <span class="user-badge user-{{ session.user_type }}">
-                    {{ session.user_type|title }}
-                </span>
-                <p class="user-location">Barangay Padolina Resident</p>
-            </div>
 
-            <!-- Main Navigation -->
-            <div class="sidebar-navigation">
-                <ul class="nav nav-pills flex-column">
-                    <!-- Dashboard -->
-                    <li class="nav-item">
-                        <a class="nav-link sidebar-link {% if request.endpoint == 'dashboard' %}active{% endif %}" 
-                           href="{{ url_for('dashboard') }}">
-                            <i class="bi bi-speedometer2"></i>
-                            <span>Dashboard</span>
-                        </a>
-                    </li>
+                <!-- Main Navigation -->
+                <div class="sidebar-navigation">
+                    <ul class="nav nav-pills flex-column">
+                        <!-- Dashboard -->
+                        <li class="nav-item">
+                            <a class="nav-link sidebar-link {% if request.endpoint == 'dashboard' %}active{% endif %}"
+                                href="{{ url_for('dashboard') }}">
+                                <i class="bi bi-speedometer2"></i>
+                                <span>Dashboard</span>
+                            </a>
+                        </li>
 
-                    <!-- Announcements -->
-                    <li class="nav-item">
-                        <a class="nav-link sidebar-link {% if request.endpoint == 'announcements' %}active{% endif %}" 
-                           href="{{ url_for('announcements') }}">
-                            <i class="bi bi-megaphone"></i>
-                            <span>Announcements</span>
-                            <p class="notification-badge">3</p>
-                        </a>
-                    </li>
+                        <!-- Announcements -->
+                        <li class="nav-item">
+                            <a class="nav-link sidebar-link {% if request.endpoint == 'announcements' %}active{% endif %}"
+                                href="{{ url_for('announcements') }}">
+                                <i class="bi bi-megaphone"></i>
+                                <span>Announcements</span>
+                                <span class="notification-badge">3</span>
+                            </a>
+                        </li>
 
-                    <!-- For Residents -->
-                    {% if session.user_type != 'admin' %}
-                    <li class="nav-item">
-                        <a class="nav-link sidebar-link" href="#">
+                        <!-- For Residents -->
+                        {% if session.user_type != 'admin' %}
+                        <li class="nav-item">
+                            <a class="nav-link sidebar-link {% if request.endpoint == 'report_concern' %}active{% endif %}"
+                                href="{{ url_for('report_concern') }}">
+                                <i class="bi bi-chat-dots"></i>
+                                <span>Report Concern</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link sidebar-link {% if request.endpoint == 'events' %}active{% endif %}"
+                                href="{{ url_for('events') }}">
+                                <i class="bi bi-calendar-event"></i>
+                                <span>Events</span>
+                                <span class="notification-badge">2</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link sidebar-link {% if request.endpoint == 'community_forum' %}active{% endif %}"
+                                href="{{ url_for('community_forum') }}">
+                                <i class="bi bi-people"></i>
+                                <span>Community Forum</span>
+                            </a>
+                        </li>
+                        {% endif %}
+
+                        <!-- Admin Tools Section -->
+                        {% if session.user_type == 'admin' %}
+                        <li class="nav-item section-header">
+                            <span>Admin Tools</span>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link sidebar-link {% if request.endpoint == 'user_management' %}active{% endif %}"
+                                href="{{ url_for('user_management') }}">
+                                <i class="bi bi-people"></i>
+                                <span>User Management</span>
+                                <span class="notification-badge">45</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link sidebar-link {% if request.endpoint == 'reports' %}active{% endif %}"
+                                href="{{ url_for('reports') }}">
+                                <i class="bi bi-clipboard-data"></i>
+                                <span>Reports</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link sidebar-link {% if request.endpoint == 'system_settings' %}active{% endif %}"
+                                href="{{ url_for('system_settings') }}">
+                                <i class="bi bi-gear"></i>
+                                <span>System Settings</span>
+                            </a>
+                        </li>
+                        {% endif %}
+
+                        <!-- Community Section -->
+                        <li class="nav-item section-header">
+                            <span>Community</span>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link sidebar-link {% if request.endpoint == 'news' %}active{% endif %}"
+                                href="{{ url_for('news') }}">
+                                <i class="bi bi-newspaper"></i>
+                                <span>News & Updates</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link sidebar-link {% if request.endpoint == 'event_calendar' %}active{% endif %}"
+                                href="{{ url_for('event_calendar') }}">
+                                <i class="bi bi-calendar-check"></i>
+                                <span>Event Calendar</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link sidebar-link {% if request.endpoint == 'directory' %}active{% endif %}"
+                                href="{{ url_for('directory') }}">
+                                <i class="bi bi-telephone"></i>
+                                <span>Directory</span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Quick Stats Section -->
+                <div class="sidebar-stats">
+                    <h6>Community Stats</h6>
+                    <div class="stats-grid">
+                        <div class="stat-item residents">
+                            <i class="bi bi-people"></i>
+                            <span class="stat-number">{{ total_residents }}</span>
+                            <span class="stat-label">Residents</span>
+                        </div>
+                        <div class="stat-item concerns">
                             <i class="bi bi-chat-dots"></i>
-                            <span>Report Concern</span>
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link sidebar-link" href="#">
+                            <span class="stat-number">{{ total_concerns }}</span>
+                            <span class="stat-label">Concerns</span>
+                        </div>
+                        <div class="stat-item events">
                             <i class="bi bi-calendar-event"></i>
-                            <span>Events</span>
-                            <p class="notification-badge">2</p>
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link sidebar-link" href="#">
-                            <i class="bi bi-people"></i>
-                            <span>Community Forum</span>
-                        </a>
-                    </li>
-                    {% endif %}
-
-                    <!-- Admin Tools Section -->
-                    {% if session.user_type == 'admin' %}
-                    <li class="nav-item section-header">
-                        <span>Admin Tools</span>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link sidebar-link" href="#">
-                            <i class="bi bi-people"></i>
-                            <span>User Management</span>
-                            <span class="notification-badge">45</span>
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link sidebar-link" href="#">
-                            <i class="bi bi-clipboard-data"></i>
-                            <span>Reports</span>
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link sidebar-link" href="#">
-                            <i class="bi bi-gear"></i>
-                            <span>System Settings</span>
-                        </a>
-                    </li>
-                    {% endif %}
-
-                    <!-- Community Section -->
-                    <li class="nav-item section-header">
-                        <span>Community</span>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link sidebar-link" href="#">
-                            <i class="bi bi-newspaper"></i>
-                            <span>News & Updates</span>
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link sidebar-link" href="#">
-                            <i class="bi bi-calendar-check"></i>
-                            <span>Event Calendar</span>
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link sidebar-link" href="#">
-                            <i class="bi bi-telephone"></i>
-                            <span>Directory</span>
-                        </a>
-                    </li>
-                </ul>
-            </div>
-
-            <!-- Quick Stats Section -->
-            <div class="sidebar-stats">
-                <h6>Community Stats</h6>
-                <div class="stats-grid">
-                    <div class="stat-item residents">
-                        <i class="bi bi-people"></i>
-                        <span class="stat-number">1,245</span>
-                        <span class="stat-label">Residents</span>
-                    </div>
-                    <div class="stat-item concerns">
-                        <i class="bi bi-chat-dots"></i>
-                        <span class="stat-number">23</span>
-                        <span class="stat-label">Concerns</span>
-                    </div>
-                    <div class="stat-item events">
-                        <i class="bi bi-calendar-event"></i>
-                        <span class="stat-number">5</span>
-                        <span class="stat-label">Events</span>
-                    </div>
-                    <div class="stat-item announcements">
-                        <i class="bi bi-megaphone"></i>
-                        <span class="stat-number">12</span>
-                        <span class="stat-label">Announce</span>
+                            <span class="stat-number">{{ total_events }}</span>
+                            <span class="stat-label">Events</span>
+                        </div>
+                        <div class="stat-item announcements">
+                            <i class="bi bi-megaphone"></i>
+                            <span class="stat-number">{{ total_announcements }}</span>
+                            <span class="stat-label">Announce</span>
+                        </div>
                     </div>
                 </div>
-            </div>
 
-            <!-- Emergency Contacts -->
-            <div class="emergency-contacts">
-                <h6>Emergency Contacts</h6>
-                <div class="emergency-buttons">
-                    <button class="btn emergency-btn police">
-                        <i class="bi bi-telephone"></i> Police: 911
-                    </button>
-                    <button class="btn emergency-btn medical">
-                        <i class="bi bi-ambulance"></i> Medical: 166
-                    </button>
-                    <button class="btn emergency-btn fire">
-                        <i class="bi bi-fire"></i> Fire: 160
-                    </button>
+                <!-- Emergency Contacts -->
+                <div class="emergency-contacts">
+                    <h6>Emergency Contacts</h6>
+                    <div class="emergency-buttons">
+                        <button class="btn emergency-btn police">
+                            <i class="bi bi-telephone"></i> Police: 911
+                        </button>
+                        <button class="btn emergency-btn medical">
+                            <i class="bi bi-ambulance"></i> Medical: 166
+                        </button>
+                        <button class="btn emergency-btn fire">
+                            <i class="bi bi-fire"></i> Fire: 160
+                        </button>
+                    </div>
                 </div>
-            </div>
 
-            <!-- Sidebar Footer -->
-            <div class="sidebar-footer">
-                <small>Barangay Padolina</small>
-                <small>© 2025 PadolinaKonektado</small>
+                <!-- Sidebar Footer -->
+                <div class="sidebar-footer">
+                    <small>Barangay Padolina</small>
+                    <small>© 2025 PadolinaKonektado</small>
+                </div>
             </div>
         </div>
     </div>
     {% endif %}
 
     <!-- Main Content Area -->
-    <main class="main-content">
+    <main class="main-content" id="mainContent">
         <!-- Flash Messages -->
         <div class="flash-messages">
             {% with messages = get_flashed_messages(with_categories=true) %}
@@ -416,7 +1321,8 @@
             {% for category, message in messages %}
             <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
                 <div class="d-flex align-items-center">
-                    <i class="bi bi-{% if category == 'success' %}check-circle{% elif category == 'danger' %}exclamation-triangle{% else %}info-circle{% endif %} me-2"></i>
+                    <i
+                        class="bi bi-{% if category == 'success' %}check-circle{% elif category == 'danger' %}exclamation-triangle{% else %}info-circle{% endif %} me-2"></i>
                     <span>{{ message }}</span>
                 </div>
                 <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
@@ -433,22 +1339,41 @@
     </main>
 
     <!-- Footer -->
-    <footer class="main-footer">
+    <footer class="main-footer bg-light" id="mainFooter">
         <div class="container-fluid">
-            <div class="row align-items-center">
-                <div class="col-md-4 text-md-start">
-                    <h6>PadolinaKonektado</h6>
-                    <small>Connecting the community</small>
+            <div class="row align-items-center py-3">
+                <!-- Brand Section -->
+                <div class="col-12 col-md-4 text-center text-md-start mb-3 mb-md-0">
+                    <div class="d-flex flex-column flex-md-row align-items-center align-items-md-start">
+                        <div class="mb-2 mb-md-0 me-md-3">
+                            <i class="bi bi-house-heart fs-4 text-primary"></i>
+                        </div>
+                        <div class="text-center text-md-start">
+                            <h6 class="mb-1 fw-bold">PadolinaKonektado</h6>
+                            <small class="text-muted" style="color: white !important;">Connecting the community</small>
+                        </div>
+                    </div>
                 </div>
-                <div class="col-md-4 text-center">
-                    <p class="mb-0">&copy; 2025 Barangay Padolina. All rights reserved.</p>
-                    <small>One click at a time.</small>
+
+                <!-- Copyright Section -->
+                <div class="col-12 col-md-4 text-center mb-3 mb-md-0">
+                    <p class="mb-1">&copy; 2025 Barangay Padolina. All rights reserved.</p>
+                    <small class="text-muted" style="color: white !important;">One click at a time.</small>
                 </div>
-                <div class="col-md-4 text-md-end">
-                    <small>
-                        <i class="bi bi-telephone me-1"></i> (02) 8123-4567<br>
-                        <i class="bi bi-envelope me-1"></i> brgy.padolina@example.com
-                    </small>
+
+                <!-- Contact Section -->
+                <div class="col-12 col-md-4 text-center text-md-end">
+                    <div
+                        class="d-flex flex-column flex-md-row justify-content-center justify-content-md-end align-items-center align-items-md-end gap-2">
+                        <small class="d-flex align-items-center justify-content-center justify-content-md-end">
+                            <i class="bi bi-telephone me-2"></i>
+                            <span>(02) 8123-4567</span>
+                        </small>
+                        <small class="d-flex align-items-center justify-content-center justify-content-md-end">
+                            <i class="bi bi-envelope me-2"></i>
+                            <span>brgy.padolina@example.com</span>
+                        </small>
+                    </div>
                 </div>
             </div>
         </div>
@@ -457,7 +1382,133 @@
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <!-- Custom JS -->
-    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const desktopSidebar = document.getElementById('desktopSidebar');
+            const mainContent = document.getElementById('mainContent');
+            const mainFooter = document.getElementById('mainFooter');
+            const sidebarToggle = document.getElementById('sidebarToggle');
+            const desktopSidebarToggle = document.getElementById('desktopSidebarToggle');
+
+            // Toggle sidebar function
+            function toggleSidebar() {
+                desktopSidebar.classList.toggle('collapsed');
+                mainContent.classList.toggle('expanded');
+                mainFooter.classList.toggle('expanded');
+
+                // Rotate toggle icon
+                const icon = sidebarToggle.querySelector('i');
+                if (desktopSidebar.classList.contains('collapsed')) {
+                    icon.className = 'bi bi-chevron-right';
+                } else {
+                    icon.className = 'bi bi-chevron-left';
+                }
+            }
+
+            // Event listeners
+            if (sidebarToggle) {
+                sidebarToggle.addEventListener('click', toggleSidebar);
+            }
+
+            // Close sidebar when clicking on mobile
+            if (window.innerWidth <= 768) {
+                const mobileSidebar = document.getElementById('mobileSidebar');
+                if (mobileSidebar) {
+                    const bsOffcanvas = new bootstrap.Offcanvas(mobileSidebar);
+                    // Add click event to close sidebar when a link is clicked
+                    const sidebarLinks = mobileSidebar.querySelectorAll('.sidebar-link');
+                    sidebarLinks.forEach(link => {
+                        link.addEventListener('click', () => {
+                            bsOffcanvas.hide();
+                        });
+                    });
+                }
+            }
+
+            // Enhanced active link highlighting
+            function updateActiveLinks() {
+                const currentPath = window.location.pathname;
+                const sidebarLinks = document.querySelectorAll('.sidebar-link');
+                
+                sidebarLinks.forEach(link => {
+                    link.classList.remove('active');
+                    
+                    // Check if the link's href matches the current path
+                    const linkPath = new URL(link.href, window.location.origin).pathname;
+                    if (linkPath === currentPath) {
+                        link.classList.add('active');
+                    }
+                    
+                    // Special case for dashboard - home path
+                    if (currentPath === '/' && linkPath.includes('dashboard')) {
+                        link.classList.add('active');
+                    }
+                });
+            }
+
+            // Initialize active links
+            updateActiveLinks();
+            
+            // Apply all saved settings globally
+            function applyGlobalSettings() {
+                // Set default values if not already set
+                if (!localStorage.getItem('accentColor')) {
+                    localStorage.setItem('accentColor', 'default');
+                }
+                if (!localStorage.getItem('themeVariant')) {
+                    localStorage.setItem('themeVariant', 'light');
+                }
+                if (!localStorage.getItem('fontSize')) {
+                    localStorage.setItem('fontSize', 'medium');
+                }
+                
+                // Apply accent color
+                const savedAccentColor = localStorage.getItem('accentColor') || 'default';
+                document.body.classList.remove('accent-primary', 'accent-success', 'accent-info', 'accent-warning', 'accent-danger', 'accent-default');
+                document.body.classList.add(`accent-${savedAccentColor}`);
+                console.log('Applied accent color:', savedAccentColor);
+                
+                // Apply theme
+                const themeVariant = localStorage.getItem('themeVariant') || 'light';
+                let darkMode = false;
+                if (themeVariant === 'dark') {
+                    darkMode = true;
+                } else if (themeVariant === 'system') {
+                    // Check system preference
+                    darkMode = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+                }
+                
+                if (darkMode) {
+                    document.body.classList.add('dark-mode');
+                } else {
+                    document.body.classList.remove('dark-mode');
+                }
+                console.log('Applied theme:', themeVariant, '(dark mode:', darkMode, ')');
+                
+                // Apply font size
+                const fontSize = localStorage.getItem('fontSize') || 'medium';
+                const sizes = ['font-small', 'font-medium', 'font-large', 'font-extra-large'];
+                sizes.forEach(size => document.body.classList.remove(size));
+                document.body.classList.add(`font-${fontSize}`);
+                console.log('Applied font size:', fontSize);
+                
+                // Listen for system theme changes if using system theme
+                if (themeVariant === 'system' && window.matchMedia) {
+                    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
+                        if (e.matches) {
+                            document.body.classList.add('dark-mode');
+                        } else {
+                            document.body.classList.remove('dark-mode');
+                        }
+                        console.log('System theme changed, updated to:', e.matches ? 'dark' : 'light');
+                    });
+                }
+            }
+            
+            // Apply global settings on page load
+            applyGlobalSettings();
+        });
+    </script>
 </body>
 
 </html>
